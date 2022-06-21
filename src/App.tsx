@@ -1,12 +1,16 @@
 import React from 'react';
 import { AuthProvider } from './context/auth';
+import Routes from './routes';
+
+import { GlobalStyle } from './styles'
 
 const App: React.FC = () => {
 
   return (
     <AuthProvider>
-      <h1>React vcersion { React.version }</h1>
-    </AuthProvider>
+      <Routes />
+      <GlobalStyle />
+    </AuthProvider> 
   )
 }
 
