@@ -1,8 +1,12 @@
 import React from 'react';
+import { AuthProvider } from './context/auth';
 
 const App: React.FC = () => {
+
   return (
-    <h1>Final Grade</h1>
+    <AuthProvider>
+      <h1>React vcersion { React.version }</h1>
+    </AuthProvider>
   )
 }
 
