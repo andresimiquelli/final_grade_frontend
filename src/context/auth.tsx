@@ -5,13 +5,13 @@ interface AuthContextProps {
     setToken(token: string): void;
 }
 
-interface AuthProviderProps {
+interface AuthContextProviderProps {
     children: React.ReactNode
 }
 
 const AuthContext = createContext<AuthContextProps>({} as AuthContextProps)
 
-const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+const AuthProvider: React.FC<AuthContextProviderProps> = ({ children }) => {
 
     const[token,setToken] = useState('')
 

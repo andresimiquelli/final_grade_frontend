@@ -1,4 +1,5 @@
 import React from 'react';
+import SideMenu from '../../components/SideMenu';
 
 import { Container, Content } from './styles'
 
@@ -10,7 +11,7 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     return (
         <Container>
             <aside>
-                Aside
+                <SideMenu />
             </aside>
             <Content>
                 { children }

@@ -7,7 +7,6 @@ export const Container = styled.main`
     > aside {
         width: 300px;
         height: 100%;
-        background-color: blue;
     }
 
     display: flex;
