@@ -34,6 +34,16 @@ const SideMenu: React.FC = () => {
                 </div>
             </Item>
             <Item 
+                className={vefSelectedMenu(MenuKeys.USERS)}
+                onClick={() => handleSelectMenu('users')}>
+                <div  className='icon'>
+                    <FaUsers />
+                </div>
+                <div className='text'>
+                    Usuários
+                </div>
+            </Item>
+            <Item 
                 className={vefSelectedMenu(MenuKeys.STUDENTS)}
                 onClick={() => handleSelectMenu('students')}>
                 <div  className='icon'>

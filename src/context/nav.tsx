@@ -34,7 +34,8 @@ const MenuKeys = {
     COURSES: 'courses',
     SUBJECTS: 'subjects',
     CLASSES: 'classes',
-    PACKS: 'packs'
+    PACKS: 'packs',
+    USERS: 'users'
 }
 
 export {NavContextProvider, useNav, MenuKeys}

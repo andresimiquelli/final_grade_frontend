@@ -14,4 +14,5 @@ export const Container = styled.main`
 
 export const Content = styled.div`
     height: 100%;
+    width: 100%;
 `;
