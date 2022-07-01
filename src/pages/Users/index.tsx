@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
+import DefaultTable from '../../components/DefaultTable';
 import LoadingContainer from '../../components/LodingContainer';
 import { useNav, MenuKeys } from '../../context/nav';
 import { useApi } from '../../services/api';
@@ -7,7 +8,7 @@ import userType from '../../services/apiTypes/User';
 
 const Users: React.FC = () => {
 
-    const { setSelectedMenu } = useNav()
+    const { setSelectedMenu, setContentTitle } = useNav()
     const api = useApi()
 
     const[isLoading,setIsLoading] = useState(false)
@@ -17,6 +18,7 @@ const Users: React.FC = () => {
 
     useEffect(() => {
         setSelectedMenu(MenuKeys.USERS)
+        setContentTitle('Usuários')
         loadUsers()
     },[])
 
@@ -28,7 +30,6 @@ const Users: React.FC = () => {
                 setUsers(response.data.data)
                 setTotalPages(response.data.last_page)
                 setCurrentPage(response.data.current_page)
-                console.log(response.data)
             }
         )
         .finally(
@@ -36,11 +37,34 @@ const Users: React.FC = () => {
         )
     }
 
+    function showTable() {
+        return (
+            <DefaultTable>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        users.map(user => <tr key={user.id}>
+                            <td>{user.name}</td>
+                            <td>{user.email}</td>
+                            <td>{user.type}</td>
+                        </tr>)
+                    }
+                </tbody>
+            </DefaultTable>
+        )
+    }
+
     return (
        <Container>
             <Row>
-                <Col>
-                    <LoadingContainer />
+                <Col className='p-0'>
+                    {isLoading? <LoadingContainer /> : showTable() }
                 </Col>
             </Row>
        </Container>
