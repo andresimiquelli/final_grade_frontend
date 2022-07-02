@@ -2,7 +2,7 @@ import { themeType } from "./theme_type";
 
 const theme = {
     colors: {
-        primary: '#1a73e8',
+        primary: '#0d6efd',
         secondary: '#d2e3fc',
         tertiary: '#E5F0F9',
         gray_0: '#FAFAFA',

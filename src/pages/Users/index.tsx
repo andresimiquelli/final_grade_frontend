@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row, Button } from 'react-bootstrap';
+import ContentToolBar from '../../components/ContentToolBar';
 import DefaultTable from '../../components/DefaultTable';
 import LoadingContainer from '../../components/LodingContainer';
 import { useNav, MenuKeys } from '../../context/nav';
 import { useApi } from '../../services/api';
 import userType from '../../services/apiTypes/User';
+import { HiPlus } from 'react-icons/hi';
+import { FaUserEdit, FaTrash } from 'react-icons/fa';
+import UserForm from './UserForm';
 
 const Users: React.FC = () => {
 
@@ -15,6 +19,9 @@ const Users: React.FC = () => {
     const[users,setUsers] = useState([] as userType[])
     const[totalPages,setTotalPages] = useState(1)
     const[currentPage,setCurrentPage] = useState(1)
+
+    const[showForm,setShowForm] = useState(false)
+    const[selected,setSelected] = useState<userType | undefined>(undefined)
 
     useEffect(() => {
         setSelectedMenu(MenuKeys.USERS)
@@ -37,6 +44,32 @@ const Users: React.FC = () => {
         )
     }
 
+    function editUser(user: userType) {
+        setSelected(user)
+        setShowForm(true)
+    }
+
+    function closeForm() {
+        setShowForm(false)
+        setSelected(undefined)
+    }
+
+    function handleSave(user: userType) {
+        setShowForm(false)
+        let nUsers = users.map(user => user)
+        nUsers.push(user)
+        setUsers(nUsers)
+    }
+
+    function handleUpdate(nUser: userType) {
+        setShowForm(false)
+        let nUsers = users.map(user => {
+            return user.id === nUser.id?
+                nUser : user
+        })
+        setUsers(nUsers)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -45,6 +78,7 @@ const Users: React.FC = () => {
                         <th>Nome</th>
                         <th>E-mail</th>
                         <th>Tipo</th>
+                        <th>&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,6 +87,13 @@ const Users: React.FC = () => {
                             <td>{user.name}</td>
                             <td>{user.email}</td>
                             <td>{user.type}</td>
+                            <td>
+                                <Button variant='secondary'
+                                    onClick={() => editUser(user)}>
+                                        <FaUserEdit />
+                                </Button> &nbsp;
+                                <Button variant='secondary'><FaTrash /></Button>
+                            </td>
                         </tr>)
                     }
                 </tbody>
@@ -62,6 +103,20 @@ const Users: React.FC = () => {
 
     return (
        <Container>
+            <UserForm 
+                show={showForm} 
+                handleClose={closeForm}
+                user={selected}
+                handleSave={handleSave}
+                handleUpdate={handleUpdate}/>
+            <ContentToolBar>
+                <div>
+                    &nbsp;
+                </div>
+                <div>
+                    <Button onClick={() => setShowForm(true)}><HiPlus /></Button>
+                </div>
+            </ContentToolBar>
             <Row>
                 <Col className='p-0'>
                     {isLoading? <LoadingContainer /> : showTable() }

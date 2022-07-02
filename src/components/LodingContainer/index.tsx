@@ -1,17 +1,21 @@
 import React from 'react';
-import BarLoader from 'react-spinners/BarLoader'
+import DotLoader from 'react-spinners/DotLoader'
 import { useTheme } from 'styled-components'
 import { themeType } from '../../themes/theme_type';
 
 import { Container } from './styles';
 
-const LoadingContainer: React.FC = () => {
+interface LoadingContainerProps {
+    show?: boolean;
+}
+
+const LoadingContainer: React.FC<LoadingContainerProps> = ({ show }) => {
 
     const theme = useTheme() as themeType
 
     return (
-        <Container>
-            <BarLoader color={theme.colors.primary} width={'100%'}/>
+        <Container show={show}>
+            <DotLoader color={theme.colors.primary}/>
         </Container>
     );
 }
