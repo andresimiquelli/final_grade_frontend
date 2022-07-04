@@ -5,6 +5,7 @@ import DefaultTable from '../../components/DefaultTable';
 import LoadingContainer from '../../components/LodingContainer';
 import { useNav, MenuKeys } from '../../context/nav';
 import { useApi } from '../../services/api';
+import { useAuth } from '../../context/auth';
 import userType, { UserType } from '../../services/apiTypes/User';
 import { HiPlus } from 'react-icons/hi';
 import { FaUserEdit, FaTrash } from 'react-icons/fa';
@@ -15,7 +16,8 @@ import { TagType } from './styles'
 const Users: React.FC = () => {
 
     const { setSelectedMenu, setContentTitle } = useNav()
-    const api = useApi()
+    const { token } = useAuth()
+    const api = useApi(token)
 
     const[isLoading,setIsLoading] = useState(false)
     const[users,setUsers] = useState([] as userType[])
