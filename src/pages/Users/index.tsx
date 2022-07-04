@@ -5,10 +5,12 @@ import DefaultTable from '../../components/DefaultTable';
 import LoadingContainer from '../../components/LodingContainer';
 import { useNav, MenuKeys } from '../../context/nav';
 import { useApi } from '../../services/api';
-import userType from '../../services/apiTypes/User';
+import userType, { UserType } from '../../services/apiTypes/User';
 import { HiPlus } from 'react-icons/hi';
 import { FaUserEdit, FaTrash } from 'react-icons/fa';
 import UserForm from './UserForm';
+
+import { TagType } from './styles'
 
 const Users: React.FC = () => {
 
@@ -70,6 +72,29 @@ const Users: React.FC = () => {
         setUsers(nUsers)
     }
 
+    function showTagType(type: number) {
+
+        let text = 'No type'
+
+        switch(type) {
+            case UserType.ADMIN.value:
+                text = UserType.ADMIN.label
+                break
+            case UserType.COORD.value:
+                text = UserType.COORD.label
+                break
+            case UserType.PROF.value:
+                text = UserType.PROF.label
+                break
+        }
+
+        return (
+            <TagType>
+                { text }
+            </TagType>
+        )
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -86,7 +111,7 @@ const Users: React.FC = () => {
                         users.map(user => <tr key={user.id}>
                             <td>{user.name}</td>
                             <td>{user.email}</td>
-                            <td>{user.type}</td>
+                            <td>{ showTagType(user.type)}</td>
                             <td>
                                 <Button variant='secondary'
                                     onClick={() => editUser(user)}>
@@ -102,7 +127,8 @@ const Users: React.FC = () => {
     }
 
     return (
-       <Container>
+       <Container className='position-relative'>
+            <LoadingContainer show={isLoading} />
             <UserForm 
                 show={showForm} 
                 handleClose={closeForm}
@@ -119,7 +145,7 @@ const Users: React.FC = () => {
             </ContentToolBar>
             <Row>
                 <Col className='p-0'>
-                    {isLoading? <LoadingContainer /> : showTable() }
+                    { showTable() }
                 </Col>
             </Row>
        </Container>

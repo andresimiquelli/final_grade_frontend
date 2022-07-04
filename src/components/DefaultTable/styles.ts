@@ -12,6 +12,10 @@ export const Container = styled.table`
             color: ${props => props.theme.colors.gray_70};
             font-size: .8rem;
             border-bottom: 1px solid ${props => props.theme.colors.gray_10};
+
+            &:first-child {
+                padding-left: 2rem;
+            }
         }
 
         
@@ -23,6 +27,11 @@ export const Container = styled.table`
             border-collapse: collapse;
             border-bottom: 1px solid ${props => props.theme.colors.gray_10};
             padding: 1rem;
+            font-size: .9rem;
+
+            &:first-child {
+                padding-left: 2rem;
+            }
         }
 
         &:hover {
