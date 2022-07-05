@@ -70,7 +70,8 @@ const SideMenu: React.FC = () => {
                     Disciplinas
                 </div>
             </Item>
-            <Item className={vefSelectedMenu(MenuKeys.COURSES)}>
+            <Item className={vefSelectedMenu(MenuKeys.COURSES)}
+                onClick={() => handleSelectMenu(MenuKeys.COURSES)}>
                 <div  className='icon'>
                     <FaBookReader />
                 </div>
