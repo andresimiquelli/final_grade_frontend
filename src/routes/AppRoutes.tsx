@@ -7,6 +7,7 @@ import Students from '../pages/Students';
 import Users from '../pages/Users';
 import Subjects from '../pages/Subjects';
 import Courses from '../pages/Courses';
+import Teachers from '../pages/Teachers';
 
 const AppRoutes: React.FC = () => {
     return (
@@ -17,6 +18,7 @@ const AppRoutes: React.FC = () => {
                 <Route path='students' element={<Students/>} />
                 <Route path='subjects' element={<Subjects/>} />
                 <Route path='courses' element={<Courses/>} />
+                <Route path='teachers' element={<Teachers/>} />
             </Routes>
         </DefaultLayout>
     );
