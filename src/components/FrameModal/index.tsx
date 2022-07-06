@@ -98,13 +98,8 @@ function FrameModal<T>(props: FrameModalProps<T>) {
         load(searchText)
     }
 
-    function close() {
-        setSearchText('')
-        props.handleClose&& props.handleClose()
-    }
-
     return (
-        <Modal show={props.show} size="lg">
+        <Modal show={props.show} size="lg" onHide={props.handleClose}>
             <Modal.Header>
                 <Modal.Title>{props.title? props.title : 'Selecionar'}</Modal.Title>
             </Modal.Header>
@@ -128,7 +123,7 @@ function FrameModal<T>(props: FrameModalProps<T>) {
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant='secondary'>Fechar</Button>
+                <Button variant='secondary' onClick={props.handleClose}>Fechar</Button>
             </Modal.Footer>
         </Modal>
     );

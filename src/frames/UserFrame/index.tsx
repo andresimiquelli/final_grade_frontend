@@ -46,7 +46,7 @@ const UserFrame: React.FC<UserFrameProps> = ({ show, handleSelect, handleClose }
 
     return (
         <FrameModal<userType> 
-            show={true} 
+            show={show} 
             title="Selecionar usuário"
             searchField='name'
             searchOperator='like'
