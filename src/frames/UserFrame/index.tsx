@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import ContentToolBar from '../../components/ContentToolBar';
 import userType, { UserType } from '../../services/apiTypes/User';
-import { FaSearch } from 'react-icons/fa';
 import FrameModal from '../../components/FrameModal';
 import DefaultTable from '../../components/DefaultTable';
 
@@ -23,7 +20,7 @@ const UserFrame: React.FC<UserFrameProps> = ({ show, handleSelect, handleClose }
 
     function showTable() {
         return (
-            <DefaultTable>
+            <DefaultTable selectionMode>
                 <thead>
                     <tr>
                         <th>Nome</th>
@@ -33,7 +30,7 @@ const UserFrame: React.FC<UserFrameProps> = ({ show, handleSelect, handleClose }
                 <tbody>
                 {
                     users.map(user => 
-                        <tr key={user.id}>
+                        <tr key={user.id} onClick={() => handleSelect&& handleSelect(user)}>
                             <td>{user.name}</td>
                             <td>{user.email}</td>
                         </tr>

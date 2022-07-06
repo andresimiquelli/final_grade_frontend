@@ -3,12 +3,13 @@ import React from 'react';
 import { Container } from './styles';
 
 interface DefaultTableProps {
-    children: React.ReactNode
+    children: React.ReactNode;
+    selectionMode?: boolean;
 }
 
 const DefaultTable: React.FC<DefaultTableProps> = ( props ) => {
     return (
-        <Container>
+        <Container selectionMode={props.selectionMode}>
             { props.children }
         </Container>
     );

@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 
-export const Container = styled.table`
+interface ContainerProps {
+    selectionMode?: boolean
+}
+
+export const Container = styled.table<ContainerProps>`
     width: 100%;
 
     > thead {
@@ -22,6 +26,8 @@ export const Container = styled.table`
     }
 
     tbody > tr {
+
+        cursor: ${props => props.selectionMode? 'pointer' : 'inherit'};
 
         > td {
             border-collapse: collapse;
