@@ -10,6 +10,7 @@ import LoadingContainer from '../../components/LodingContainer';
 import ContentToolBar from '../../components/ContentToolBar';
 import { HiPlus } from 'react-icons/hi';
 import CourseForm from './CourseForm';
+import { courseLevelRederer } from '../../utils/courseLevelRenderer';
 
 const Courses: React.FC = () => {
 
@@ -46,25 +47,6 @@ const Courses: React.FC = () => {
         )
     }
 
-    function getLevelLabel(level: number): string {
-        switch(level) {
-            case CourseLevels.LIVRE.value:
-                return CourseLevels.LIVRE.label
-            case CourseLevels.TEC.value:
-                return CourseLevels.TEC.label
-            case CourseLevels.POSLAT.value:
-                return CourseLevels.POSLAT.label
-            case CourseLevels.POSSTRICT.value:
-                return CourseLevels.POSSTRICT.label
-            case CourseLevels.SUP.value:
-                return CourseLevels.SUP.label
-            case CourseLevels.REG.value:
-                return CourseLevels.REG.label
-            default: 
-                return 'Indefinido'
-        }
-    }
-
     function editCourse(course: courseType) {
         setSelected(course)
         setShowForm(true)
@@ -98,7 +80,7 @@ const Courses: React.FC = () => {
                     courses.map(course => 
                     <tr key={course.id}>
                         <td>{course.name}</td>
-                        <td>{getLevelLabel(course.level)}</td>
+                        <td>{courseLevelRederer(course.level)}</td>
                         <td>
                             <Button variant='secondary'
                                 onClick={() => editCourse(course)}>
