@@ -12,6 +12,8 @@ import { useNav, MenuKeys } from '../../context/nav';
 import courseType from '../../services/apiTypes/Course';
 import PackForm from './PackForm';
 import CourseFrame from '../../frames/CourseFrame';
+import { IoExtensionPuzzleSharp } from 'react-icons/io5';
+import ButtonColumn from '../../components/ButtonColumn';
 
 const Packs: React.FC = () => {
 
@@ -82,12 +84,14 @@ const Packs: React.FC = () => {
                             <td>{pack.course?.name}</td>
                             <td>{pack.description}</td>
                             <td>
-                                <Button 
-                                    variant='secondary'
-                                    onClick={() => editPack(pack)}>
-                                        <FaEdit />
-                                </Button>
-                                <Button variant='secondary'><FaTrash /></Button>
+                                <ButtonColumn>
+                                    <button className='secondary' 
+                                        onClick={() => editPack(pack)}>
+                                            <FaEdit />
+                                    </button>
+                                    <button className='secondary'><FaTrash /></button>
+                                    <button className='ml-1'><IoExtensionPuzzleSharp /></button>                    
+                                </ButtonColumn>
                             </td>
                         </tr>    
                     )
