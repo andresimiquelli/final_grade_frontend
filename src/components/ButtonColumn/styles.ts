@@ -3,6 +3,8 @@ import styled from 'styled-components';
 export const Container = styled.div`
     display: flex;
     align-items: center;
+    width: 100%;
+    justify-content: flex-end;
 
     > div.divisor {
         flex: 1;
@@ -33,18 +35,18 @@ export const Container = styled.div`
     }
 
     > button.secondary {
-        color: ${props => props.theme.colors.gray_50};
+        color: ${props => props.theme.colors.gray_80};
     }
 
     > button:hover {
         background-color: ${props => props.theme.colors.white};
     }
 
-    > * button.ml-1 {
+    > button.ml-1 {
         margin-left: 1rem;
     }
 
-    > * button.mr-1 {
+    > button.mr-1 {
         margin-right: 1rem;
     }
 `;
