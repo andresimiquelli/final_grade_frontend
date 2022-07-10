@@ -32,6 +32,11 @@ export const Container = styled.div`
         font-weight: 600;
         border: 0;
         border-radius: 26px;
+        padding: 0 14px 0 14px;
+
+        > span {
+            padding: 0 0 0 7px;
+        }
     }
 
     > button.secondary {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { HiPlus } from 'react-icons/hi';
@@ -20,6 +21,7 @@ const Packs: React.FC = () => {
     const { token } = useAuth()
     const api = useApi(token)
     const { setContentTitle, setSelectedMenu } = useNav()
+    const navigate = useNavigate()
 
     const[packs,setPacks] = useState([] as packType[])
     const[totalPages,setTotalPages] = useState(1)
@@ -65,6 +67,10 @@ const Packs: React.FC = () => {
         setShowForm(true)
     }
 
+    function toModules(pack_id: number) {
+        navigate('/packs/'+pack_id+'/modules')
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -90,7 +96,10 @@ const Packs: React.FC = () => {
                                             <FaEdit />
                                     </button>
                                     <button className='secondary'><FaTrash /></button>
-                                    <button className='ml-1'><IoExtensionPuzzleSharp /></button>                    
+                                    <button className='ml-1' onClick={() => toModules(pack.id)}>
+                                        <IoExtensionPuzzleSharp />
+                                        <span>Módulos</span>
+                                    </button>                    
                                 </ButtonColumn>
                             </td>
                         </tr>    
