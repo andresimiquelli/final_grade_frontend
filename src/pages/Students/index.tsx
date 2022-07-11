@@ -10,6 +10,7 @@ import { FaUserEdit, FaTrash } from 'react-icons/fa';
 import DefaultTable from '../../components/DefaultTable';
 import StudentForm from './StudentForm';
 import LoadingContainer from '../../components/LodingContainer';
+import ButtonColumn from '../../components/ButtonColumn';
 
 const Students: React.FC = () => {
 
@@ -83,11 +84,13 @@ const Students: React.FC = () => {
                             <td>{student.email}</td>
                             <td>{student.phone}</td>
                             <td>
-                                <Button variant='secondary'
-                                    onClick={() => editStudent(student)}>
-                                        <FaUserEdit />
-                                </Button> &nbsp;
-                                <Button variant='secondary'><FaTrash /></Button>
+                                <ButtonColumn>
+                                    <button className='secondary'
+                                        onClick={() => editStudent(student)}>
+                                            <FaUserEdit />
+                                    </button> &nbsp;
+                                    <button className='secondary'><FaTrash /></button>
+                                </ButtonColumn>
                             </td>
                         </tr>)
                     }

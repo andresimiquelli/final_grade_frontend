@@ -12,6 +12,7 @@ import ContentToolBar from '../../components/ContentToolBar';
 
 import { SubjectDescription } from './styles'
 import SubjectForm from './SubjctForm';
+import ButtonColumn from '../../components/ButtonColumn';
 
 const Subjects: React.FC = () => {
 
@@ -86,12 +87,14 @@ const Subjects: React.FC = () => {
                                 <SubjectDescription>{subject.description}</SubjectDescription>
                             </td>
                             <td>
-                                <Button variant='secondary' onClick={() => editSubject(subject)}>
-                                    <FaEdit />
-                                </Button> &nbsp;
-                                <Button variant='secondary'>
-                                    <FaTrash />
-                                </Button>
+                                <ButtonColumn>
+                                    <button className='secondary' onClick={() => editSubject(subject)}>
+                                        <FaEdit />
+                                    </button> &nbsp;
+                                    <button className='secondary'>
+                                        <FaTrash />
+                                    </button>
+                                </ButtonColumn>
                             </td>
                         </tr>    
                     )

@@ -122,9 +122,10 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, show, handleClose, h
                         </Form.Group>                    
                         <Form.Group className="mb-2">
                             <Form.Control 
-                                type="text" 
+                                type="tel" 
                                 placeholder='Telefone'
-                                minLength={6}
+                                minLength={10}
+                                maxLength={15}
                                 onChange={(e) => setPhone(e.target.value)}
                                 value={phone}/>
                         </Form.Group>                                         

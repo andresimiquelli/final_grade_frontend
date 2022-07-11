@@ -11,6 +11,7 @@ import ContentToolBar from '../../components/ContentToolBar';
 import { HiPlus } from 'react-icons/hi';
 import CourseForm from './CourseForm';
 import { courseLevelRederer } from '../../utils/courseLevelRenderer';
+import ButtonColumn from '../../components/ButtonColumn';
 
 const Courses: React.FC = () => {
 
@@ -82,11 +83,13 @@ const Courses: React.FC = () => {
                         <td>{course.name}</td>
                         <td>{courseLevelRederer(course.level)}</td>
                         <td>
-                            <Button variant='secondary'
-                                onClick={() => editCourse(course)}>
-                                    <FaEdit />
-                            </Button> &nbsp;
-                            <Button variant='secondary'><FaTrash /></Button>
+                            <ButtonColumn>
+                                <button className='secondary'
+                                    onClick={() => editCourse(course)}>
+                                        <FaEdit />
+                                </button> &nbsp;
+                                <button className='secondary'><FaTrash /></button>
+                            </ButtonColumn>
                         </td>
                     </tr> )
                 }

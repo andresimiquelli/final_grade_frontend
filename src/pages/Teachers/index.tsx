@@ -11,6 +11,7 @@ import LoadingContainer from '../../components/LodingContainer';
 import ContentToolBar from '../../components/ContentToolBar';
 import UserFrame from '../../frames/UserFrame';
 import userType from '../../services/apiTypes/User';
+import ButtonColumn from '../../components/ButtonColumn';
 
 const Teachers: React.FC = () => {
 
@@ -64,7 +65,9 @@ const Teachers: React.FC = () => {
                             <td>{teacher.user.name}</td>
                             <td>{teacher.user.email}</td>
                             <td>
-                                <Button variant='secondary'><FaTrash /></Button>
+                                <ButtonColumn>
+                                   <button className='secondary'><FaTrash /></button> 
+                                </ButtonColumn>
                             </td>
                         </tr>
                     )

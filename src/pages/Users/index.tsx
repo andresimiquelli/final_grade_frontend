@@ -12,6 +12,7 @@ import { FaUserEdit, FaTrash } from 'react-icons/fa';
 import UserForm from './UserForm';
 
 import { TagType } from './styles'
+import ButtonColumn from '../../components/ButtonColumn';
 
 const Users: React.FC = () => {
 
@@ -115,11 +116,13 @@ const Users: React.FC = () => {
                             <td>{user.email}</td>
                             <td>{ showTagType(user.type)}</td>
                             <td>
-                                <Button variant='secondary'
-                                    onClick={() => editUser(user)}>
-                                        <FaUserEdit />
-                                </Button> &nbsp;
-                                <Button variant='secondary'><FaTrash /></Button>
+                                <ButtonColumn>
+                                    <button className='secondary'
+                                        onClick={() => editUser(user)}>
+                                            <FaUserEdit />
+                                    </button> &nbsp;
+                                    <button className='secondary'><FaTrash /></button>
+                                </ButtonColumn>
                             </td>
                         </tr>)
                     }
