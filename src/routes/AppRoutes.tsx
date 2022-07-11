@@ -11,6 +11,7 @@ import Teachers from '../pages/Teachers';
 import Packs from '../pages/Packs';
 import Modules from '../pages/Packs/Modules';
 import ModuleSubjects from '../pages/Packs/Modules/ModuleSubjects';
+import Classes from '../pages/Classes';
 
 const AppRoutes: React.FC = () => {
     return (
@@ -22,6 +23,7 @@ const AppRoutes: React.FC = () => {
                 <Route path='subjects' element={<Subjects/>} />
                 <Route path='courses' element={<Courses/>} />
                 <Route path='teachers' element={<Teachers/>} />
+                <Route path='classes' element={<Classes/>} />
                 <Route path='packs' element={<Packs/>} />
                 <Route path='packs/:pack_id/modules' element={<Modules/>} />
                 <Route path='packs/:pack_id/modules/:module_id/subjects' element={<ModuleSubjects/>} />

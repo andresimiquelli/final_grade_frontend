@@ -15,7 +15,6 @@ type filterParamType = {
 
 interface FrameModalProps<T> {
     show?: boolean;
-    handleSelect?(item: T): void;
     handleClose?(): void;
     title?: string;
     searchPlaceholder?: string;
@@ -85,9 +84,9 @@ function FrameModal<T>(props: FrameModalProps<T>) {
             query += props.searchField+":"
 
             if(props.searchOperator === 'like')
-                query += "like:%"+value+"%"
+                query += encodeURI("like:%"+value+"%")
             else
-                query += value
+                query += encodeURI(value)
         }
 
         return query

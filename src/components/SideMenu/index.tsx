@@ -6,6 +6,7 @@ import { Container, Title, Item } from './styles';
 
 import { FaUsers, FaChalkboardTeacher, FaAddressBook, FaUserGraduate, FaBookReader, FaBoxOpen } from 'react-icons/fa';
 import { MdSpaceDashboard } from 'react-icons/md'
+import { IoPeopleCircleSharp } from 'react-icons/io5'
 
 const SideMenu: React.FC = () => {
 
@@ -87,6 +88,15 @@ const SideMenu: React.FC = () => {
                 </div>
                 <div className='text'>
                     Pacotes didáticos
+                </div>
+            </Item>
+            <Item className={vefSelectedMenu(MenuKeys.CLASSES)}
+                onClick={() => handleSelectMenu(MenuKeys.CLASSES)}>
+                <div className='icon'>
+                    <IoPeopleCircleSharp />
+                </div>
+                <div className='text'>
+                    Turmas
                 </div>
             </Item>
         </Container>
