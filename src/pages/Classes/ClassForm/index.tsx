@@ -5,6 +5,9 @@ import { useAuth } from '../../../context/auth';
 import { useApi } from '../../../services/api';
 import packType from '../../../services/apiTypes/Pack';
 import LoadingContainer from '../../../components/LodingContainer';
+import ErrorScreen from '../../../components/ErrorScreen';
+import errorType from '../../../services/apiTypes/Error';
+import { extractError } from '../../../utils/errorHandler';
 
 interface ClassFormProps {
     show?: boolean;
@@ -31,6 +34,8 @@ const ClassForm: React.FC<ClassFormProps> = ({ show, cClass, pack, handleClose, 
     const[startAt,setStartAt] = useState('')
     const[endAt,setEndAt] = useState('')
     const[isLoading,setIsLoading] = useState(false)
+    const[hasError,setHasError] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
 
     useEffect(() => {
         if(cClass) {
@@ -81,6 +86,12 @@ const ClassForm: React.FC<ClassFormProps> = ({ show, cClass, pack, handleClose, 
         .finally(
             () => setIsLoading(false)
         )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function update() {
@@ -95,6 +106,16 @@ const ClassForm: React.FC<ClassFormProps> = ({ show, cClass, pack, handleClose, 
         .finally(
             () => setIsLoading(false)
         )
+        .catch(
+            error => {
+                setError(error.response.data)
+                setHasError(true)
+            }
+        )
+    }
+
+    function closeError() {
+        setHasError(false)
     }
 
     return (
@@ -104,6 +125,7 @@ const ClassForm: React.FC<ClassFormProps> = ({ show, cClass, pack, handleClose, 
             </Modal.Header>
             <Form onSubmit={save}>
                 <Modal.Body className='position-relative'>
+                    <ErrorScreen show={hasError} handleClose={closeError} error={error}/>                    
                     <LoadingContainer show={isLoading}/>
                     <Form.Group className='mb-2'>
                         <h6>{pack?.name}</h6>
@@ -113,8 +135,9 @@ const ClassForm: React.FC<ClassFormProps> = ({ show, cClass, pack, handleClose, 
                             type='text'
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            required
-                            placeholder='Nome'/>
+                            min={4}
+                            placeholder='Nome'
+                            required/>
                     </Form.Group>
                     <Form.Group className='mb-2'>
                         <Form.Control 
