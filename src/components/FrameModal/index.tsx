@@ -18,12 +18,14 @@ interface FrameModalProps<T> {
     handleClose?(): void;
     title?: string;
     searchPlaceholder?: string;
-    searchField: string;
+    searchField?: string;
     searchOperator?: '=' | 'like';
     filterParams?: filterParamType[];
     endpoint: string;
+    withFields?: string[];
     handleShowResult(items: T[]): void;
     children: React.ReactNode;
+    subheader?: React.ReactNode;
 }
 
 function FrameModal<T>(props: FrameModalProps<T>) {
@@ -37,8 +39,9 @@ function FrameModal<T>(props: FrameModalProps<T>) {
     const[currentPage,setCurrentPage] = useState(1)
 
     useEffect(() => {
-        load()
-    },[])
+        if(props.show)
+            load()
+    },[props.show])
 
     function load(searchBy: string = '', page: number = 1) {
         let query = "?page="+page
@@ -46,6 +49,16 @@ function FrameModal<T>(props: FrameModalProps<T>) {
 
         if(filters.length > 0)
             query += "&"+filters
+
+        if(props.withFields) {
+            query += "&with="
+            props.withFields.forEach((field, index) => {
+                query += field
+                if(index < ((props.withFields?.length ?? 0) -1)) {
+                    query += ","
+                }
+            })
+        }           
 
         setIsLoading(true)
         api.get(props.endpoint+query)
@@ -75,18 +88,20 @@ function FrameModal<T>(props: FrameModalProps<T>) {
             })
         }
 
-        if(value.trim().length > 0) {
-            if(query.length > 0)
-                query += ","
-            else
-                query += "filters="
-
-            query += props.searchField+":"
-
-            if(props.searchOperator === 'like')
-                query += encodeURI("like:%"+value+"%")
-            else
-                query += encodeURI(value)
+        if(props.searchField) {
+            if(value.trim().length > 0) {
+                if(query.length > 0)
+                    query += ","
+                else
+                    query += "filters="
+    
+                query += props.searchField+":"
+    
+                if(props.searchOperator === 'like')
+                    query += encodeURI("like:%"+value+"%")
+                else
+                    query += encodeURI(value)
+            }
         }
 
         return query
@@ -105,7 +120,15 @@ function FrameModal<T>(props: FrameModalProps<T>) {
             <Modal.Body className='position-relative'>
                 <LoadingContainer show={isLoading} />
                 <ContentToolBar>
+                {
+                    props.subheader&&
+                        <div>
+                            { props.subheader }
+                        </div>
+                }
                     <div>
+                    {
+                        props.searchField&&
                         <SearchForm onSubmit={search}>
                             <Form.Control 
                                 type='text' 
@@ -114,6 +137,7 @@ function FrameModal<T>(props: FrameModalProps<T>) {
                                 onChange={(e) => setSearchText(e.target.value)}/>
                             &nbsp;<Button type='submit'><FaSearch /></Button>
                         </SearchForm>
+                    }                        
                     </div>
                     <div></div>
                 </ContentToolBar>

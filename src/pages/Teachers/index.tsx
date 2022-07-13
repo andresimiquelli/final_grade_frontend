@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useAuth } from '../../context/auth';
 import { useApi } from '../../services/api';
 import teacherType from '../../services/apiTypes/Teacher';
 import { useNav, MenuKeys } from '../../context/nav';
 import DefaultTable from '../../components/DefaultTable';
-import { FaTrash } from 'react-icons/fa'
+import { FaLink, FaTrash } from 'react-icons/fa'
 import { HiPlus } from 'react-icons/hi';
 import LoadingContainer from '../../components/LodingContainer';
 import ContentToolBar from '../../components/ContentToolBar';
@@ -18,6 +19,7 @@ const Teachers: React.FC = () => {
     const { token } = useAuth()
     const api = useApi(token)
     const { setSelectedMenu, setContentTitle } = useNav()
+    const navigate = useNavigate()
 
     const[teachers,setTeachers] = useState([] as teacherType[])
     const[currentPage,setCurrentPage] = useState(1)
@@ -66,7 +68,8 @@ const Teachers: React.FC = () => {
                             <td>{teacher.user.email}</td>
                             <td>
                                 <ButtonColumn>
-                                   <button className='secondary'><FaTrash /></button> 
+                                   <button className='secondary'><FaTrash /></button>
+                                   <button className='ml-1' onClick={() => navigate(`/teachers/${teacher.id}/assignments`)}><FaLink /> <span>vículos</span></button>
                                 </ButtonColumn>
                             </td>
                         </tr>

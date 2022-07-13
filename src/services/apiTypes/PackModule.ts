@@ -1,4 +1,5 @@
 import packType from "./Pack";
+import packModuleSubjectType from "./PackModuleSubject";
 
 type packModuleType = {
     id: number;
@@ -8,6 +9,7 @@ type packModuleType = {
     created_at: string;
     updated_at: string;
     pack?: packType;
+    subjects?: packModuleSubjectType[];
 }
 
 export default packModuleType;
