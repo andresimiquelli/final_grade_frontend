@@ -4,7 +4,6 @@ import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useAuth } from '../../../context/auth';
 import { useApi } from '../../../services/api';
 import { useNav, MenuKeys } from '../../../context/nav';
-import teacherAssignmentType from '../../../services/apiTypes/TeacherAssignment';
 import errorType from '../../../services/apiTypes/Error';
 import { extractError } from '../../../utils/errorHandler';
 import ContentToolBar from '../../../components/ContentToolBar';
@@ -19,7 +18,8 @@ import classType from '../../../services/apiTypes/Class';
 import packModuleSubjectType from '../../../services/apiTypes/PackModuleSubject';
 import PackSubjectFrame from '../../../frames/PackSubjectFrame';
 import AssignmentForm from './AssignmentForm';
-import teacherType from '../../../services/apiTypes/Teacher';
+import userType from '../../../services/apiTypes/User';
+import userAssignmentType from '../../../services/apiTypes/UserAssignment';
 
 const Assignments: React.FC = () => {
 
@@ -28,8 +28,8 @@ const Assignments: React.FC = () => {
     const api = useApi(token)
     const { setContentTitle, setSelectedMenu } = useNav()
 
-    const[teacher,setTeacher] = useState<teacherType | undefined>()
-    const[assignments,setAssignments] = useState<teacherAssignmentType[]>([])
+    const[teacher,setTeacher] = useState<userType>({} as userType)
+    const[assignments,setAssignments] = useState<userAssignmentType[]>([])
     const[totalPages,setTotalPages] = useState(1)
     const[currentPage,setCurrentPage] = useState(1)
 
@@ -42,7 +42,7 @@ const Assignments: React.FC = () => {
     const[showSubjectFrame,setShowSubjectFrame] = useState(false)
     const[selectedSubject,setSelectedSubject] = useState<packModuleSubjectType | undefined>()
     const[showForm,setShowForm] = useState(false)
-    const[selected,setSelected] = useState<teacherAssignmentType | undefined>()
+    const[selected,setSelected] = useState<userAssignmentType | undefined>()
 
     useEffect(() => {
         if(teacher_id)
@@ -55,7 +55,7 @@ const Assignments: React.FC = () => {
 
     function loadTeacher(id: string | number) {
         setIsLoading(true)
-        api.get('/teachers/'+id)
+        api.get('/users/'+id)
         .then(
             response => {
                 setTeacher(response.data)
@@ -73,7 +73,7 @@ const Assignments: React.FC = () => {
 
     function loadAssignments() {
         setIsLoading(true)
-        api.get(`/teachers/${teacher_id}/assignments`)
+        api.get(`/users/${teacher_id}/assignments`)
         .then(
             response => {
                 setAssignments(response.data.data)
@@ -111,7 +111,7 @@ const Assignments: React.FC = () => {
         setSelectedSubject(undefined)
     }
 
-    function editAssignment(assignment: teacherAssignmentType) {
+    function editAssignment(assignment: userAssignmentType) {
         setSelected(assignment)
         setSelectedClass(assignment.cclass)
         setSelectedSubject({ subject: assignment.subject, id: 0} as packModuleSubjectType)
@@ -124,11 +124,11 @@ const Assignments: React.FC = () => {
         closeFrame()
     }
 
-    function handleSave(assignment: teacherAssignmentType) {
+    function handleSave(assignment: userAssignmentType) {
         setAssignments([assignment, ...assignments])
     }
 
-    function handleUpdate(nAssignment: teacherAssignmentType) {
+    function handleUpdate(nAssignment: userAssignmentType) {
         setAssignments(current => current.map(assignment => assignment.id === nAssignment.id? nAssignment : assignment))
     }
 

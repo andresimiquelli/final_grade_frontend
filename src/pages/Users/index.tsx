@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Col, Container, Row, Button } from 'react-bootstrap';
 import ContentToolBar from '../../components/ContentToolBar';
 import DefaultTable from '../../components/DefaultTable';
@@ -8,7 +9,7 @@ import { useApi } from '../../services/api';
 import { useAuth } from '../../context/auth';
 import userType, { UserType } from '../../services/apiTypes/User';
 import { HiPlus } from 'react-icons/hi';
-import { FaUserEdit, FaTrash } from 'react-icons/fa';
+import { FaUserEdit, FaTrash, FaLink } from 'react-icons/fa';
 import UserForm from './UserForm';
 
 import { TagType } from './styles'
@@ -19,6 +20,7 @@ const Users: React.FC = () => {
     const { setSelectedMenu, setContentTitle } = useNav()
     const { token } = useAuth()
     const api = useApi(token)
+    const navigate = useNavigate()
 
     const[isLoading,setIsLoading] = useState(false)
     const[users,setUsers] = useState([] as userType[])
@@ -122,6 +124,12 @@ const Users: React.FC = () => {
                                             <FaUserEdit />
                                     </button> &nbsp;
                                     <button className='secondary'><FaTrash /></button>
+                                    {
+                                        user.type === UserType.PROF.value&& 
+                                            <button className='ml-2' onClick={() => navigate(`/users/${user.id}/assignments`) }>
+                                                <FaLink />
+                                            </button>
+                                    } 
                                 </ButtonColumn>
                             </td>
                         </tr>)

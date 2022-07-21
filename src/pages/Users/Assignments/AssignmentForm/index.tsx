@@ -2,24 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import classType from '../../../../services/apiTypes/Class';
 import packModuleSubjectType from '../../../../services/apiTypes/PackModuleSubject';
-import teacherType from '../../../../services/apiTypes/Teacher';
-import teacherAssignmentType from '../../../../services/apiTypes/TeacherAssignment';
 import { useAuth } from '../../../../context/auth';
 import { useApi } from '../../../../services/api';
 import LoadingContainer from '../../../../components/LodingContainer';
 import ErrorScreen from '../../../../components/ErrorScreen';
 import errorType from '../../../../services/apiTypes/Error';
 import { extractError } from '../../../../utils/errorHandler';
+import userType from '../../../../services/apiTypes/User';
+import userAssignmentType from '../../../../services/apiTypes/UserAssignment';
 
 interface AssignmentFormProps {
     show?: boolean;
-    teacher?: teacherType;
+    teacher: userType;
     cclass?: classType;
     subject?: packModuleSubjectType;
-    assignment?: teacherAssignmentType;
+    assignment?: userAssignmentType;
     handleClose?(): void;
-    handleSave?(assignment: teacherAssignmentType): void;
-    handleUpdate?(assignment: teacherAssignmentType): void;
+    handleSave?(assignment: userAssignmentType): void;
+    handleUpdate?(assignment: userAssignmentType): void;
 }
 
 type dataType = {
@@ -76,7 +76,7 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ( props ) => {
 
     function saveNew() {
         let data = getData()
-        api.post(`/teachers/${props.teacher?.id}/assignments`,data)
+        api.post(`/users/${props.teacher?.id}/assignments`,data)
         .then(
             response => {
                 props.handleSave&& props.handleSave(response.data)
@@ -94,7 +94,7 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ( props ) => {
 
     function update() {
         let data = getData()
-        api.post(`/teachers/${props.teacher?.id}/assignments/${props.assignment?.id}`,data)
+        api.put(`/users/${props.teacher?.id}/assignments/${props.assignment?.id}`,data)
         .then(
             response => {
                 props.handleUpdate&& props.handleUpdate(response.data)
@@ -120,7 +120,7 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ( props ) => {
                     <LoadingContainer show={isLoading}/>
                     <ErrorScreen show={hasError} error={error} handleClose={() => setHasError(false)}/>
                     <Form.Group className='mb-2'>
-                        <h5 className='text-primary'>{props.teacher?.user.name}</h5>
+                        <h5 className='text-primary'>{props.teacher?.name}</h5>
                     </Form.Group>
                     <Form.Group className='mb-2'>
                         <h6>{props.cclass?.name}</h6>
