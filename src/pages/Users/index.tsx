@@ -119,17 +119,18 @@ const Users: React.FC = () => {
                             <td>{ showTagType(user.type)}</td>
                             <td>
                                 <ButtonColumn>
+                                    {
+                                        user.type === UserType.PROF.value&& 
+                                            <button className='mr-2' onClick={() => navigate(`/users/${user.id}/assignments`) }>
+                                                <FaLink /> <span>Vínculos</span>
+                                            </button>
+                                    } 
                                     <button className='secondary'
                                         onClick={() => editUser(user)}>
                                             <FaUserEdit />
                                     </button> &nbsp;
                                     <button className='secondary'><FaTrash /></button>
-                                    {
-                                        user.type === UserType.PROF.value&& 
-                                            <button className='ml-2' onClick={() => navigate(`/users/${user.id}/assignments`) }>
-                                                <FaLink />
-                                            </button>
-                                    } 
+                                    
                                 </ButtonColumn>
                             </td>
                         </tr>)

@@ -54,4 +54,12 @@ export const Container = styled.div`
     > button.mr-1 {
         margin-right: 1rem;
     }
+
+    > button.ml-2 {
+        margin-left: 2rem;
+    }
+
+    > button.mr-2 {
+        margin-right: 2rem;
+    }
 `;
