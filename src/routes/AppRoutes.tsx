@@ -4,6 +4,7 @@ import DefaultLayout from '../pages/DefaultLayout';
 
 import Dashboard from '../pages/Dashboard';
 import Students from '../pages/Students';
+import Enrollments from '../pages/Students/Enrollments';
 import Users from '../pages/Users';
 import Subjects from '../pages/Subjects';
 import Courses from '../pages/Courses';
@@ -21,6 +22,7 @@ const AppRoutes: React.FC = () => {
                 <Route path='users' element={<Users/>} />
                 <Route path='users/:teacher_id/assignments' element={<Assignments/>} />
                 <Route path='students' element={<Students/>} />
+                <Route path='students/:student_id/enrollments' element={<Enrollments/>} />
                 <Route path='subjects' element={<Subjects/>} />
                 <Route path='courses' element={<Courses/>} />                
                 <Route path='classes' element={<Classes/>} />

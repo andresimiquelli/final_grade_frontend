@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useNav, MenuKeys } from '../../context/nav';
 import { useAuth } from '../../context/auth';
 import { useApi } from '../../services/api';
@@ -6,7 +7,7 @@ import studentType from '../../services/apiTypes/Student';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import ContentToolBar from '../../components/ContentToolBar';
 import { HiPlus } from 'react-icons/hi';
-import { FaUserEdit, FaTrash } from 'react-icons/fa';
+import { FaUserEdit, FaTrash, FaLink } from 'react-icons/fa';
 import DefaultTable from '../../components/DefaultTable';
 import StudentForm from './StudentForm';
 import LoadingContainer from '../../components/LodingContainer';
@@ -17,6 +18,7 @@ const Students: React.FC = () => {
     const { setSelectedMenu } = useNav()
     const { token } = useAuth()
     const api = useApi(token)
+    const navigate = useNavigate()
 
     const[isLoading,setIsLoading] = useState(false)
     const[students,setStudents] = useState([] as studentType[])
@@ -85,6 +87,9 @@ const Students: React.FC = () => {
                             <td>{student.phone}</td>
                             <td>
                                 <ButtonColumn>
+                                    <button className='mr-2' onClick={() => navigate(`/students/${student.id}/enrollments`)}>
+                                        <FaLink /> <span>Matrículas</span>
+                                    </button>
                                     <button className='secondary'
                                         onClick={() => editStudent(student)}>
                                             <FaUserEdit />
