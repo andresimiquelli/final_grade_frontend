@@ -1,11 +1,16 @@
 import React from 'react';
-import { BrowserRouter, HashRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import AppRoutes from './AppRoutes';
+import { useAuth } from '../context/auth';
+import AuthRoutes from './AuthRoutes';
 
 const Routes: React.FC = () => {
+
+    const { token } = useAuth()
+
     return (
         <HashRouter>
-            <AppRoutes />
+            { token.length>0 ? <AppRoutes /> : <AuthRoutes />}            
         </HashRouter>
     );
 }
