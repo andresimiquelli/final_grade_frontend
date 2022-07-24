@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-    padding: 1rem;
-    background-color: ${props => props.theme.colors.gray_3};
+    padding: 2rem 1rem 1rem 1rem;
+    
     height: 100%;
     color: ${props => props.theme.colors.gray_90};
 `;
