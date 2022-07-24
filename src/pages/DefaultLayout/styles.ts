@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Container = styled.main`
-    background-color: ${props => props.theme.colors.gray_3+'55'};
+    background-color: ${props => props.theme.colors.white+'55'};
     backdrop-filter: blur(5px);
 
     > aside {

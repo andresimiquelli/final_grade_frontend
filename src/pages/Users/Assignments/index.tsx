@@ -49,7 +49,7 @@ const Assignments: React.FC = () => {
             loadTeacher(teacher_id)
     
         setContentTitle("Vínculos")
-        setSelectedMenu(MenuKeys.TEACHERS)
+        setSelectedMenu(MenuKeys.USERS)
         
     },[teacher_id])
 
