@@ -29,6 +29,7 @@ const AppRoutes: React.FC = () => {
                 <Route path='packs' element={<Packs/>} />
                 <Route path='packs/:pack_id/modules' element={<Modules/>} />
                 <Route path='packs/:pack_id/modules/:module_id/subjects' element={<ModuleSubjects/>} />
+                <Route element={<Dashboard />} />
             </Routes>
         </DefaultLayout>
     );
