@@ -9,11 +9,10 @@ import { BoxLogin, Container, Logo } from './styles';
 
 import logo from '../../assets/logo_moria.png';
 
-
 const Login: React.FC = () => {
 
     const api = useApi()
-    const { setAuth } = useAuth()
+    const { setAuth, setCurrentUser } = useAuth()
 
     const[email,setEmail] = useState('')
     const[password,setPassword] = useState('')
@@ -31,11 +30,25 @@ const Login: React.FC = () => {
         .then(
             response => {
                 setAuth(response.data)
+                loadUser(response.data.access_token)
             }
         )
         .catch()
         .finally(
             () => setIsloading(false)
+        )
+    }
+
+    function loadUser(token: string) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        api.post('/auth/me')
+        .then(
+            response => {
+                setCurrentUser(response.data)
+            }
+        )
+        .catch(
+            error => console.log(error)
         )
     }
 
