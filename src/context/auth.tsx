@@ -8,7 +8,7 @@ interface AuthContextProps {
     token: string;
     tokenUpdatedAt: number;
     tokenExpiresIn: number;
-    setAuth(token: tokenType): void;
+    setAuth(token: tokenType | null): void;
     currentUser: userType | undefined;
     updateUser(user: userType): void;
 }
@@ -55,10 +55,19 @@ const AuthProvider: React.FC<AuthContextProviderProps> = ({ children }) => {
         return () => {clearTimeout(timer)}
     },[])
 
-    function setAuth(tokenObject: tokenType) {
-        const filledToken  = fillTokenStates(tokenObject)
-        storeToken(filledToken)
-        refreshSchedule(filledToken.token)
+    function setAuth(tokenObject: tokenType | null) {
+        if(tokenObject) {
+           const filledToken  = fillTokenStates(tokenObject)
+            storeToken(filledToken)
+            refreshSchedule(filledToken.token) 
+        } else {
+            setToken('')
+            setTokenExpiresIn(0)
+            setTokenUpdatedAt(0)
+            setCurrentUser(undefined)
+            localStorage.removeItem(storagePrefix+'token')
+            localStorage.removeItem(storagePrefix+'user')
+        }        
     }
 
     function updateUser(user: userType) {
