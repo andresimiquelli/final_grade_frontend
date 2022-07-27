@@ -12,7 +12,7 @@ import logo from '../../assets/logo_moria.png';
 const Login: React.FC = () => {
 
     const api = useApi()
-    const { setAuth, setCurrentUser } = useAuth()
+    const { setAuth, updateUser } = useAuth()
 
     const[email,setEmail] = useState('')
     const[password,setPassword] = useState('')
@@ -44,7 +44,7 @@ const Login: React.FC = () => {
         api.post('/auth/me')
         .then(
             response => {
-                setCurrentUser(response.data)
+                updateUser(response.data)
             }
         )
         .catch(
