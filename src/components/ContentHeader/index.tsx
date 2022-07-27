@@ -1,6 +1,7 @@
 import React from 'react';
+import UserGadget from '../UserGadget';
 
-import { Container } from './styles';
+import { Container, TitleColumn, UserColumn } from './styles';
 
 interface ContentHeaderProps {
     title?: string;
@@ -10,7 +11,12 @@ interface ContentHeaderProps {
 const ContentHeader: React.FC<ContentHeaderProps> = ( props ) => {
     return (
         <Container>
-            <h4>{props.title}</h4>
+            <TitleColumn>
+                <h4>{props.title}</h4>
+            </TitleColumn>
+            <UserColumn>
+                <UserGadget />
+            </UserColumn>
         </Container>
     );
 }
