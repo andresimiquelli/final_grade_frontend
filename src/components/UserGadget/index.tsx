@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/auth';
 import ClickAwayListener from 'react-click-away-listener';
 import { useApi } from '../../services/api';
@@ -9,12 +10,18 @@ const UserGadget: React.FC = () => {
 
     const { currentUser, token, updateUser, setAuth } = useAuth()
     const api = useApi(token)
+    const navigate = useNavigate()
 
     const[showMenu,setShowMenu] = useState(false)
 
     function logout() {
         api.post('/auth/logout')
-        .finally(() => setAuth(null))
+        .finally(
+            () => {
+                setAuth(null)
+                navigate('/')
+            }
+        )
     }
 
     return (
