@@ -13,6 +13,7 @@ import LoadingContainer from '../../../components/LodingContainer';
 import ContentToolBar from '../../../components/ContentToolBar';
 import { HiPlus } from 'react-icons/hi';
 import packType from '../../../services/apiTypes/Pack';
+import ModuleForm from './ModuleForm';
 
 const Modules: React.FC = () => {
 
@@ -28,6 +29,8 @@ const Modules: React.FC = () => {
     const[totalPages,setTotalPages] = useState(1)
 
     const[isLoading,setIsLoading] = useState(false)
+    const[showForm,setShowForm] = useState(false)
+    const[selected,setSelected] = useState<packModuleType | undefined>()
 
     useEffect(() => {
         setContentTitle("Módulos")
@@ -67,6 +70,23 @@ const Modules: React.FC = () => {
         )
     }
 
+    function handleSave(module: packModuleType) {
+        setModules([module, ...modules])
+    }
+
+    function handleUpdate(nModule: packModuleType) {
+        setModules(current => current.map(module => module.id === nModule.id? nModule : module))
+    }
+
+    function closeForm() {
+        setShowForm(false)
+    }
+
+    function editModule(module: packModuleType) {
+        setSelected(module)
+        setShowForm(true)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -87,7 +107,11 @@ const Modules: React.FC = () => {
                             <td>{module.order}</td>
                             <td>
                                 <ButtonColumn>
-                                    <button className='secondary'><FaEdit/></button>
+                                    <button 
+                                        className='secondary'
+                                        onClick={() => editModule(module)}>
+                                            <FaEdit/>
+                                    </button>
                                     <button className='secondary'><FaTrash/></button>
                                     <button
                                         className='ml-1'
@@ -107,10 +131,20 @@ const Modules: React.FC = () => {
     return (
         <Container className='position-relative'>
             <LoadingContainer show={isLoading}/>
+            <ModuleForm 
+                show={showForm}
+                pack={pack}
+                module={selected}
+                handleSave={handleSave}
+                handleUpdate={handleUpdate}
+                handleClose={closeForm}/>
             <ContentToolBar>
                 <div></div>
                 <div>
-                    <Button><HiPlus /></Button>
+                    <Button
+                        onClick={() => setShowForm(true)}>
+                            <HiPlus />
+                    </Button>
                 </div>
             </ContentToolBar>
             <Row>
