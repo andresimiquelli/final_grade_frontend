@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { HiPlus } from 'react-icons/hi';
 import ContentToolBar from '../../components/ContentToolBar';
@@ -9,6 +10,7 @@ import { useApi } from '../../services/api';
 import DefaultTable from '../../components/DefaultTable';
 import ButtonColumn from '../../components/ButtonColumn';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import { RiBookletFill } from 'react-icons/ri';
 import { dateRenderer } from '../../utils/dateRenderer';
 import LoadingContainer from '../../components/LodingContainer';
 import PackFrame from '../../frames/PackFrame';
@@ -17,6 +19,7 @@ import ClassForm from './ClassForm';
 
 const Classes: React.FC = () => {
 
+    const navigate = useNavigate()
     const {setContentTitle, setSelectedMenu} = useNav()
     const { token } = useAuth()
     const api = useApi(token)
@@ -75,6 +78,10 @@ const Classes: React.FC = () => {
                             <td>{dateRenderer(cclass.end_at)}</td>
                             <td>
                                 <ButtonColumn>
+                                    <button onClick={() => navigate(`/journals/${cclass.id}`)}>
+                                        <RiBookletFill />
+                                        <span>Diários</span>
+                                    </button>
                                     <button 
                                         className='secondary'
                                         onClick={() => editClass(cclass)}>

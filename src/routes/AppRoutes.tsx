@@ -13,6 +13,7 @@ import Modules from '../pages/Packs/Modules';
 import ModuleSubjects from '../pages/Packs/Modules/ModuleSubjects';
 import Classes from '../pages/Classes';
 import Assignments from '../pages/Users/Assignments';
+import Journals from '../pages/Classes/Journals';
 
 const AppRoutes: React.FC = () => {
     return (
@@ -26,6 +27,7 @@ const AppRoutes: React.FC = () => {
                 <Route path='subjects' element={<Subjects/>} />
                 <Route path='courses' element={<Courses/>} />                
                 <Route path='classes' element={<Classes/>} />
+                <Route path='journals/:class_id' element={<Journals/>} />
                 <Route path='packs' element={<Packs/>} />
                 <Route path='packs/:pack_id/modules' element={<Modules/>} />
                 <Route path='packs/:pack_id/modules/:module_id/subjects' element={<ModuleSubjects/>} />

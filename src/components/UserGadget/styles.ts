@@ -62,4 +62,6 @@ export const Menu = styled.div`
             }
         }
     }
+
+    z-index: 5;
 `;
