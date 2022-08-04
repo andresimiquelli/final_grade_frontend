@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Button, Col, Container, Row } from 'react-bootstrap';
-import { HiPlus } from 'react-icons/hi';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Col, Container, Row } from 'react-bootstrap';
 import ContentToolBar from '../../../components/ContentToolBar';
 import { useAuth } from '../../../context/auth';
 import { useNav, MenuKeys } from '../../../context/nav';
@@ -18,6 +17,7 @@ const Journals: React.FC = () => {
     const { token } = useAuth()
     const api = useApi(token)
     const { setContentTitle, setSelectedMenu } = useNav()
+    const navigate = useNavigate()
 
     const[journals,setJournals] = useState<journalType[]>([])
     const[totalPages,setTotalPages] = useState(1)
@@ -64,7 +64,7 @@ const Journals: React.FC = () => {
                             <td>{journal.pack_module_name}</td>
                             <td>
                                 <ButtonColumn>
-                                    <button>
+                                    <button onClick={() => navigate(`/lessons/${class_id}/${journal.subject_id}`)}>
                                         <FaChalkboardTeacher />
                                         <span>Aulas</span>
                                     </button>
@@ -76,7 +76,6 @@ const Journals: React.FC = () => {
                             </td>
                         </tr> 
                     )
-                    
                 }                    
                 </tbody>
             </DefaultTable>

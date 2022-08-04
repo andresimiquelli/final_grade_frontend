@@ -6,6 +6,7 @@ type lessonType = {
     reference: string;
     created_at: string;
     updated_at: string;
+    content: string;
 }
 
 export default lessonType;
