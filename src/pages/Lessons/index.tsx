@@ -13,6 +13,7 @@ import ButtonColumn from '../../components/ButtonColumn';
 import { FaEdit, FaTrash, FaUserCheck } from 'react-icons/fa';
 import { HiPlus } from 'react-icons/hi';
 import LessonForm from './LessonForm';
+import AttendanceForm from './AttendanceForm';
 
 const Lessons: React.FC = () => {
 
@@ -29,6 +30,7 @@ const Lessons: React.FC = () => {
     const[isLoading,setIsLoading] = useState(false)
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<lessonType | undefined>()
+    const[showAttendanceForm, setShowAttendanceForm] = useState(false)
 
     useEffect(() => {
         setContentTitle("Aulas")
@@ -69,6 +71,16 @@ const Lessons: React.FC = () => {
         setShowForm(true)
     }
 
+    function attendance(lesson: lessonType) {
+        setSelected(lesson)
+        setShowAttendanceForm(true)
+    }
+
+    function closeAttendanceForm() {
+        setSelected(undefined)
+        setShowAttendanceForm(false)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -87,9 +99,10 @@ const Lessons: React.FC = () => {
                             <td><small>{lesson.content}</small></td>
                             <td>
                                 <ButtonColumn>
-                                    <button>
+                                    <button
+                                        onClick={() => attendance(lesson)}>
                                         <FaUserCheck />
-                                        <span>Presenças</span>
+                                        <span>Chamada</span>
                                     </button>
                                     <button 
                                         onClick={() => editLesson(lesson)}
@@ -121,6 +134,11 @@ const Lessons: React.FC = () => {
                 handleUpdate={handleUpdate}
                 classId={class_id}
                 subjectId={subject_id}/>
+            <AttendanceForm 
+                show={showAttendanceForm}
+                classId={class_id}
+                handleClose={closeAttendanceForm}
+                lesson={selected}/>
             <ContentToolBar>
                 <div></div>
                 <div>
