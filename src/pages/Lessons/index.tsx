@@ -40,7 +40,7 @@ const Lessons: React.FC = () => {
 
     function loadLessons() {
         setIsLoading(true)
-        api.get(`/class/${class_id}/subject/${subject_id}/lessons`)
+        api.get(`/classes/${class_id}/subjects/${subject_id}/lessons`)
         .then(
             response => {
                 setLessons(response.data.data)
@@ -62,6 +62,11 @@ const Lessons: React.FC = () => {
 
     function handleUpdate(nLesson: lessonType) {
         setLessons(current => current.map(lesson => lesson.id === nLesson.id ? nLesson : lesson))
+    }
+
+    function editLesson(lesson: lessonType) {
+        setSelected(lesson)
+        setShowForm(true)
     }
 
     function showTable() {
@@ -86,7 +91,9 @@ const Lessons: React.FC = () => {
                                         <FaUserCheck />
                                         <span>Presenças</span>
                                     </button>
-                                    <button className='secondary'>
+                                    <button 
+                                        onClick={() => editLesson(lesson)}
+                                        className='secondary'>
                                         <FaEdit />
                                     </button>
                                     <button className='secondary'>

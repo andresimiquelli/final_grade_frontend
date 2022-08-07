@@ -17,13 +17,14 @@ interface LessonFormProps {
 }
 
 type dataType = {
+    user_id?: number;
     content: string;
     reference: string;
 }
 
 const LessonForm: React.FC<LessonFormProps> = ( props ) => {
 
-    const { token } = useAuth()
+    const { token, currentUser } = useAuth()
     const api = useApi(token)
 
     const[content,setContent] = useState('')
@@ -33,7 +34,7 @@ const LessonForm: React.FC<LessonFormProps> = ( props ) => {
     useEffect(() => {
         if(props.lesson) {
             setContent(props.lesson.content)
-            setReference(props.lesson.reference)
+            setReference(props.lesson.reference.split(" ")[0])
         } else {
             clearForm()
         }
@@ -45,10 +46,16 @@ const LessonForm: React.FC<LessonFormProps> = ( props ) => {
     }
 
     function getData(): dataType {
-        return {
+        let data = {
             content: content,
             reference: reference
-        }
+        } as dataType
+
+        if(!props.lesson)
+            if(currentUser)
+                data.user_id = currentUser.id
+
+        return data;
     }  
 
     function save(e: React.FormEvent) {
@@ -63,7 +70,7 @@ const LessonForm: React.FC<LessonFormProps> = ( props ) => {
 
     function saveNew() {
         const data = getData()
-        api.post(`/class/${props.classId}/subject/${props.subjectId}/lessons`,data)
+        api.post(`/classes/${props.classId}/subjects/${props.subjectId}/lessons`,data)
         .then(
             response => {
                 props.handleSave&& props.handleSave(response.data)
@@ -75,7 +82,7 @@ const LessonForm: React.FC<LessonFormProps> = ( props ) => {
 
     function update() {
         const data = getData()
-        api.put(`/class/${props.classId}/subject/${props.subjectId}/lessons/${props.lesson?.id}`,data)
+        api.put(`/classes/${props.classId}/subjects/${props.subjectId}/lessons/${props.lesson?.id}`,data)
         .then(
             response => {
                 props.handleUpdate&& props.handleUpdate(response.data)
