@@ -68,7 +68,7 @@ const Journals: React.FC = () => {
                                         <FaChalkboardTeacher />
                                         <span>Aulas</span>
                                     </button>
-                                    <button>
+                                    <button onClick={() => navigate(`/evaluations/${class_id}/${journal.subject_id}`)}>
                                         <TbChecklist />
                                         <span>Avaliações</span>
                                     </button>
