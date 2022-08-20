@@ -13,6 +13,7 @@ import { FaEdit, FaTrash } from 'react-icons/fa';
 import ContentToolBar from '../../../components/ContentToolBar';
 import { MdChecklist } from 'react-icons/md';
 import GradeForm from './GradeForm';
+import EvaluationForm from './EvaluationForm';
 
 const Evaluations: React.FC = () => {
 
@@ -28,6 +29,7 @@ const Evaluations: React.FC = () => {
     const[isLoading,setIsLoading] = useState(false)
     const[selected,setSelected] = useState<evaluationType | undefined>()
     const[showGradeForm,setShowGradeForm] = useState(false)
+    const[showEvaluationForm,setShowEvaluationForm] = useState(false)
 
     useEffect(() => {
         setContentTitle("Avaliações")
@@ -46,6 +48,11 @@ const Evaluations: React.FC = () => {
             }
         )
         .finally(() => setIsLoading(false))
+    }
+
+    function edit(evaluation: evaluationType) {
+        setSelected(evaluation)
+        setShowEvaluationForm(true)
     }
 
     function showTable() {
@@ -70,7 +77,11 @@ const Evaluations: React.FC = () => {
                                         <MdChecklist/>
                                         <span>Pontuação</span>
                                     </button>
-                                    <button className='secondary'><FaEdit /></button>
+                                    <button 
+                                        className='secondary'
+                                        onClick={() => edit(evaluation)}>
+                                            <FaEdit />
+                                    </button>
                                     <button className='secondary'><FaTrash /></button>
                                 </ButtonColumn>
                             </td>
@@ -92,9 +103,30 @@ const Evaluations: React.FC = () => {
         setShowGradeForm(false)
     }
 
+    function closeEvaluationForm() {
+        setSelected(undefined)
+        setShowEvaluationForm(false)
+    }
+
+    function handleSave(evaluation: evaluationType) {
+        setEvaluations([evaluation, ...evaluations])
+    }
+
+    function handleUpdate(evaluation: evaluationType) {
+        setEvaluations(current => current.map(ceval => ceval.id===evaluation.id? evaluation : ceval))
+    }
+
     return (
         <Container className='position-relative'>            
-            <LoadingContainer />
+            <LoadingContainer show={isLoading} />
+            <EvaluationForm
+                show={showEvaluationForm}
+                handleClose={closeEvaluationForm} 
+                handleSave={handleSave}
+                handleUpdate={handleUpdate}
+                classId={class_id? parseInt(class_id) : undefined}
+                subjectId={subject_id? parseInt(subject_id) : undefined}
+                evaluation={selected}/>
             <GradeForm 
                 show={showGradeForm}
                 classId={class_id}
@@ -104,7 +136,7 @@ const Evaluations: React.FC = () => {
             <ContentToolBar>
                 <div></div>
                 <div>
-                    <Button><HiPlus /> Nova avaliação</Button>
+                    <Button onClick={() => setShowEvaluationForm(true)}><HiPlus /> Nova avaliação</Button>
                 </div>
             </ContentToolBar>
             <Row>

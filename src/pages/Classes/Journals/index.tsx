@@ -10,6 +10,7 @@ import DefaultTable from '../../../components/DefaultTable';
 import ButtonColumn from '../../../components/ButtonColumn';
 import { FaChalkboardTeacher } from 'react-icons/fa';
 import { TbChecklist } from 'react-icons/tb';
+import LoadingContainer from '../../../components/LodingContainer';
 
 const Journals: React.FC = () => {
 
@@ -84,6 +85,7 @@ const Journals: React.FC = () => {
 
     return (
         <Container className='position-relative'>
+            <LoadingContainer show={isLoading} />
             <ContentToolBar>
                 <div></div>
                 <div></div>
