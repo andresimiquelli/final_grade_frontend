@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Col, Container, Row, Button } from 'react-bootstrap';
+import { Col, Container, Row, Button, Form } from 'react-bootstrap';
 import ContentToolBar from '../../components/ContentToolBar';
 import DefaultTable from '../../components/DefaultTable';
 import LoadingContainer from '../../components/LodingContainer';
@@ -8,12 +8,13 @@ import { useNav, MenuKeys } from '../../context/nav';
 import { useApi } from '../../services/api';
 import { useAuth } from '../../context/auth';
 import userType, { UserType } from '../../services/apiTypes/User';
-import { HiPlus } from 'react-icons/hi';
+import { HiPlus, HiSearch } from 'react-icons/hi';
 import { FaUserEdit, FaTrash, FaLink } from 'react-icons/fa';
 import UserForm from './UserForm';
 
 import { TagType } from './styles'
 import ButtonColumn from '../../components/ButtonColumn';
+import PaginatorDefault from '../../components/PaginatorDefault';
 
 const Users: React.FC = () => {
 
@@ -27,6 +28,9 @@ const Users: React.FC = () => {
     const[totalPages,setTotalPages] = useState(1)
     const[currentPage,setCurrentPage] = useState(1)
 
+    const[searchName,setSearchName] = useState('')
+    const[searchEmail,setSearchEmail] = useState('')
+
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<userType | undefined>(undefined)
 
@@ -36,9 +40,30 @@ const Users: React.FC = () => {
         loadUsers()
     },[])
 
-    function loadUsers() {
+    function getFilters(page: number) {
+        let filters = '?'
+        let fields = ''
+
+        if(searchName.trim().length>0)
+            fields += "filters=name:like:"+encodeURI("%"+searchName+"%")
+
+        if(searchEmail.trim().length>0) {
+            fields += fields.length>0? ',' : 'filters='
+            fields += 'email:like:'+encodeURI("%"+searchEmail+"%")
+        }
+
+        filters += fields
+
+        filters += filters.length>1? '&' : ''
+
+        filters += 'page='+page
+
+        return filters
+    }
+
+    function loadUsers(page: number = 1) {
         setIsLoading(true)
-        api.get('/users')
+        api.get('/users'+getFilters(page))
         .then(
             response => {
                 setUsers(response.data.data)
@@ -140,6 +165,11 @@ const Users: React.FC = () => {
         )
     }
 
+    function search(e: React.FormEvent) {
+        e.preventDefault()
+        loadUsers()
+    }
+
     return (
        <Container className='position-relative'>
             <LoadingContainer show={isLoading} />
@@ -150,9 +180,34 @@ const Users: React.FC = () => {
                 handleSave={handleSave}
                 handleUpdate={handleUpdate}/>
             <ContentToolBar>
-                <div>
-                    &nbsp;
-                </div>
+                <Form onSubmit={search}>
+                    <Row>
+                        <Col sm="5">
+                            <Form.Control 
+                                type='text'
+                                placeholder='Buscar nome'
+                                value={searchName}
+                                onChange={(e) => setSearchName(e.target.value)}/>
+                        </Col>
+                        <Col sm="6">
+                            <Form.Control 
+                                type='email'
+                                placeholder='Buscar e-mail'
+                                value={searchEmail}
+                                onChange={(e) => setSearchEmail(e.target.value)}/>
+                        </Col>
+                        <Col sm="1">
+                            <Button
+                                type='submit'>
+                                <HiSearch />
+                            </Button>
+                        </Col>
+                    </Row>
+                </Form>
+                <PaginatorDefault
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={(page) => loadUsers(page)} />
                 <div>
                     <Button onClick={() => setShowForm(true)}><HiPlus /></Button>
                 </div>
