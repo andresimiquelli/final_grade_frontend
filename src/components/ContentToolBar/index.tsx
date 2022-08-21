@@ -1,4 +1,5 @@
 import React from 'react';
+import { Row } from 'react-bootstrap';
 
 import { Container } from './styles';
 
@@ -8,9 +9,11 @@ interface ContentToolBarProps {
 
 const ContentToolBar: React.FC<ContentToolBarProps> = ({ children }) => {
     return (
-        <Container>
-            { children }
-        </Container>
+        <Row className='p-0'>
+            <Container>
+                { children }
+            </Container>
+        </Row>
     );
 }
 

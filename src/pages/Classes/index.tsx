@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Col, Container, Row } from 'react-bootstrap';
-import { HiPlus } from 'react-icons/hi';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { HiPlus, HiSearch } from 'react-icons/hi';
 import ContentToolBar from '../../components/ContentToolBar';
 import { useNav, MenuKeys } from '../../context/nav';
 import classType from '../../services/apiTypes/Class';
@@ -16,6 +16,7 @@ import LoadingContainer from '../../components/LodingContainer';
 import PackFrame from '../../frames/PackFrame';
 import packType from '../../services/apiTypes/Pack';
 import ClassForm from './ClassForm';
+import PaginatorDefault from '../../components/PaginatorDefault';
 
 const Classes: React.FC = () => {
 
@@ -27,6 +28,7 @@ const Classes: React.FC = () => {
     const[classes,setClasses] = useState<classType[]>([])
     const[currentPage,setCurrentPage] = useState(1)
     const[totalPages,setTotalPages] = useState(1)
+    const[searchName,setSearchName] = useState('')
 
     const[isLoading,setIsLoading] = useState(false)
     const[showPackFrame,setShowPackFrame] = useState(false)
@@ -40,10 +42,23 @@ const Classes: React.FC = () => {
         loadClasses()
     },[])
 
-    function loadClasses() {
+    function getFilters(page: number = 1) {
+        let filters = '?'
+
+        if(searchName.trim().length>0)
+            filters += "filters=name:like:"+encodeURI("%"+searchName+"%")
+
+        filters += filters.length>1? '&' : ''
+
+        filters += 'page='+page
+
+        return filters
+    }
+
+    function loadClasses(page: number = 1) {
         setIsLoading(true)
 
-        api.get('/classes')
+        api.get('/classes'+getFilters(page))
         .then(
             response => {
                 setClasses(response.data.data)
@@ -128,6 +143,11 @@ const Classes: React.FC = () => {
         setShowForm(false)
     }
 
+    function search(e: React.FormEvent) {
+        e.preventDefault()
+        loadClasses()
+    }
+
     return (
         <Container className='position-relative'>
             <LoadingContainer show={isLoading}/>
@@ -143,7 +163,27 @@ const Classes: React.FC = () => {
                 handleUpdate={handleUpdate}
                 pack={selectedPack}/>
             <ContentToolBar>
-                <div></div>
+                <Form onSubmit={search}>
+                    <Row>
+                        <Col sm="11">
+                            <Form.Control 
+                                type='text'
+                                placeholder='Buscar turma'
+                                value={searchName}
+                                onChange={(e) => setSearchName(e.target.value)}/>
+                        </Col>
+                        <Col sm="1">
+                            <Button
+                                type='submit'>
+                                <HiSearch />
+                            </Button>
+                        </Col>
+                    </Row>
+                </Form>
+                <PaginatorDefault
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={(page) => loadClasses(page)}/>
                 <div>
                     <Button onClick={() => setShowPackFrame(true)}><HiPlus /></Button>
                 </div>

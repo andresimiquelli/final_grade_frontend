@@ -6,7 +6,9 @@ export const Container = styled.div`
 
     display: flex;
 
-    > div {
+    background-color: ${props => props.theme.colors.gray_3};
+
+    > * {
         flex: 1;
         display: flex;
 
