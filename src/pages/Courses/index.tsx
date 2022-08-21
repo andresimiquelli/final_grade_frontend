@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useAuth } from '../../context/auth';
 import { useApi } from '../../services/api';
 import { useNav, MenuKeys } from '../../context/nav';
@@ -8,10 +8,11 @@ import DefaultTable from '../../components/DefaultTable';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import LoadingContainer from '../../components/LodingContainer';
 import ContentToolBar from '../../components/ContentToolBar';
-import { HiPlus } from 'react-icons/hi';
+import { HiPlus, HiSearch } from 'react-icons/hi';
 import CourseForm from './CourseForm';
 import { courseLevelRederer } from '../../utils/courseLevelRenderer';
 import ButtonColumn from '../../components/ButtonColumn';
+import PaginatorDefault from '../../components/PaginatorDefault';
 
 const Courses: React.FC = () => {
 
@@ -22,6 +23,7 @@ const Courses: React.FC = () => {
     const[courses,setCourses] = useState([] as courseType[])
     const[currentPage,setCurrentPage] = useState(1)
     const[totalPages,setTotalPages] = useState(1)
+    const[searchName,setSearchName] = useState('')
 
     const[isLoading,setIsLoading] = useState(false)
     const[showForm,setShowForm] = useState(false)
@@ -33,9 +35,22 @@ const Courses: React.FC = () => {
         loadCourses()
     },[])
 
-    function loadCourses() {
+    function getFilters(page: number) {
+        let filters = '?'
+
+        if(searchName.trim().length>0)
+            filters += "filters=name:like:"+encodeURI("%"+searchName+"%")
+
+        filters += filters.length>1? '&' : ''
+
+        filters += 'page='+page
+
+        return filters
+    }
+
+    function loadCourses(page: number = 1) {
         setIsLoading(true)
-        api.get('/courses')
+        api.get('/courses'+getFilters(page))
         .then(
             response => {
                 setCourses(response.data.data)
@@ -98,6 +113,11 @@ const Courses: React.FC = () => {
         )
     }
 
+    function search(e: React.FormEvent) {
+        e.preventDefault()
+        loadCourses()
+    }
+
     return (
         <Container className='position-relative'>
             <LoadingContainer show={isLoading} />
@@ -108,7 +128,27 @@ const Courses: React.FC = () => {
                 handleSave={handleSave}
                 handleUpdate={handleUpdate}/>
             <ContentToolBar>
-                <div>&nbsp;</div>
+            <Form onSubmit={search}>
+                    <Row>
+                        <Col sm="11">
+                            <Form.Control 
+                                type='text'
+                                placeholder='Buscar curso'
+                                value={searchName}
+                                onChange={(e) => setSearchName(e.target.value)}/>
+                        </Col>
+                        <Col sm="1">
+                            <Button
+                                type='submit'>
+                                <HiSearch />
+                            </Button>
+                        </Col>
+                    </Row>
+                </Form>
+                <PaginatorDefault
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={(page) => loadCourses(page)} />
                 <div>
                     <Button onClick={() => setShowForm(true)}><HiPlus /></Button>
                 </div>
