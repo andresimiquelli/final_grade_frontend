@@ -14,6 +14,7 @@ import ContentToolBar from '../../../components/ContentToolBar';
 import { HiPlus } from 'react-icons/hi';
 import packType from '../../../services/apiTypes/Pack';
 import ModuleForm from './ModuleForm';
+import PaginatorDefault from '../../../components/PaginatorDefault';
 
 const Modules: React.FC = () => {
 
@@ -55,9 +56,13 @@ const Modules: React.FC = () => {
         )
     }
 
-    function loadModules() {
+    function getFilters(page: number = 1) {
+        return '?page='+page
+    }
+
+    function loadModules(page: number = 1) {
         setIsLoading(true)
-        api.get(`/packs/${pack_id}/modules`)
+        api.get(`/packs/${pack_id}/modules`+getFilters(page))
         .then(
             response => {
                 setModules(response.data.data)
@@ -140,6 +145,10 @@ const Modules: React.FC = () => {
                 handleClose={closeForm}/>
             <ContentToolBar>
                 <div></div>
+                <PaginatorDefault
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={(page) => loadModules(page)} />
                 <div>
                     <Button
                         onClick={() => setShowForm(true)}>

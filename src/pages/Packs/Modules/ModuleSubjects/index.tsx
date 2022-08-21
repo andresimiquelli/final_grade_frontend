@@ -16,6 +16,7 @@ import { subjectLoadRenderer } from '../../../../utils/subjectLoadRenderer';
 import SubjectFrame from '../../../../frames/SubjectFrame';
 import subjectType from '../../../../services/apiTypes/Subject';
 import ModuleSubjectForm from './ModuleSubjectForm';
+import PaginatorDefault from '../../../../components/PaginatorDefault';
 
 const ModuleSubjects: React.FC = () => {
 
@@ -57,9 +58,13 @@ const ModuleSubjects: React.FC = () => {
         )
     }
 
-    function loadSubjects() {
+    function getFilters(page: number = 1) {
+        return '?page='+page
+    }
+
+    function loadSubjects(page: number = 1) {
         setIsLoading(true)
-        api.get(`/packs/${pack_id}/modules/${module_id}/subjects`)
+        api.get(`/packs/${pack_id}/modules/${module_id}/subjects`+getFilters(page))
         .then(
             response => {
                 setSubjects(response.data.data)
@@ -154,6 +159,10 @@ const ModuleSubjects: React.FC = () => {
                     handleUpdate={handleUpdate}/>
             <ContentToolBar>
                 <div></div>
+                <PaginatorDefault
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={(page) => loadSubjects(page)} />
                 <div>
                     <Button onClick={() => setShowSubjectFrame(true)}><HiPlus /></Button>
                 </div>
