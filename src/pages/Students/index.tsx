@@ -4,14 +4,15 @@ import { useNav, MenuKeys } from '../../context/nav';
 import { useAuth } from '../../context/auth';
 import { useApi } from '../../services/api';
 import studentType from '../../services/apiTypes/Student';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import ContentToolBar from '../../components/ContentToolBar';
-import { HiPlus } from 'react-icons/hi';
+import { HiPlus, HiSearch } from 'react-icons/hi';
 import { FaUserEdit, FaTrash, FaLink } from 'react-icons/fa';
 import DefaultTable from '../../components/DefaultTable';
 import StudentForm from './StudentForm';
 import LoadingContainer from '../../components/LodingContainer';
 import ButtonColumn from '../../components/ButtonColumn';
+import PaginatorDefault from '../../components/PaginatorDefault';
 
 const Students: React.FC = () => {
 
@@ -25,6 +26,9 @@ const Students: React.FC = () => {
     const[totalPages,setTotalPages] = useState(1)
     const[currentPage,setCurrentPage] = useState(1)
 
+    const[searchName,setSearchName] = useState('')
+    const[searchEmail,setSearchEmail] = useState('')
+
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<studentType | undefined>(undefined)
 
@@ -33,8 +37,30 @@ const Students: React.FC = () => {
         loadStudents()
     },[])
 
-    function loadStudents() {
-        api.get('/students')
+    function getFilters(page: number) {
+        let filters = '?'
+        let fields = ''
+
+        if(searchName.trim().length>0)
+            fields += "filters=name:like:"+encodeURI("%"+searchName+"%")
+
+        if(searchEmail.trim().length>0) {
+            fields += fields.length>0? ',' : 'filters='
+            fields += 'email:like:'+encodeURI("%"+searchEmail+"%")
+        }
+
+        filters += fields
+
+        filters += filters.length>1? '&' : ''
+
+        filters += 'page='+page
+
+        return filters
+    }
+
+    function loadStudents(page: number = 1) {
+        setIsLoading(true)
+        api.get('/students'+getFilters(page))
         .then(
             response => {
                 setStudents(response.data.data)
@@ -104,6 +130,11 @@ const Students: React.FC = () => {
         )
     }
 
+    function search(e: React.FormEvent) {
+        e.preventDefault()
+        loadStudents()
+    }
+
     return (
         <Container className='position-relative'>
             <LoadingContainer show={isLoading}/>
@@ -114,9 +145,34 @@ const Students: React.FC = () => {
                 handleSave={handleSave}
                 handleUpdate={handleUpdate}/>
             <ContentToolBar>
-                <div>
-                    &nbsp;
-                </div>
+                <Form onSubmit={search}>
+                    <Row>
+                        <Col sm="5">
+                            <Form.Control 
+                                type='text'
+                                placeholder='Buscar nome'
+                                value={searchName}
+                                onChange={(e) => setSearchName(e.target.value)}/>
+                        </Col>
+                        <Col sm="6">
+                            <Form.Control 
+                                type='email'
+                                placeholder='Buscar e-mail'
+                                value={searchEmail}
+                                onChange={(e) => setSearchEmail(e.target.value)}/>
+                        </Col>
+                        <Col sm="1">
+                            <Button
+                                type='submit'>
+                                <HiSearch />
+                            </Button>
+                        </Col>
+                    </Row>
+                </Form>
+                <PaginatorDefault
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={(page) => loadStudents(page)} />
                 <div>
                     <Button onClick={() => setShowForm(true)}><HiPlus /></Button>
                 </div>
