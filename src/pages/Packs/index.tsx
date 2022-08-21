@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import { HiPlus } from 'react-icons/hi';
+import { HiPlus, HiSearch } from 'react-icons/hi';
 import ContentToolBar from '../../components/ContentToolBar';
 import DefaultTable from '../../components/DefaultTable';
 import LoadingContainer from '../../components/LodingContainer';
@@ -15,6 +15,7 @@ import PackForm from './PackForm';
 import CourseFrame from '../../frames/CourseFrame';
 import { IoExtensionPuzzleSharp } from 'react-icons/io5';
 import ButtonColumn from '../../components/ButtonColumn';
+import PaginatorDefault from '../../components/PaginatorDefault';
 
 const Packs: React.FC = () => {
 
@@ -26,6 +27,7 @@ const Packs: React.FC = () => {
     const[packs,setPacks] = useState([] as packType[])
     const[totalPages,setTotalPages] = useState(1)
     const[currentPage,setCurrentPage] = useState(1)
+    const[searchName,setSearchName] = useState('')
 
     const[isLoading,setIsLoading] = useState(false)
     const[showFrameCourses,setShowFrameCourses] = useState(false)
@@ -39,9 +41,22 @@ const Packs: React.FC = () => {
         loadPacks()
     },[])
 
-    function loadPacks() {
+    function getFilters(page: number = 1) {
+        let filters = '?'
+
+        if(searchName.trim().length>0)
+            filters += "filters=name:like:"+encodeURI("%"+searchName+"%")
+
+        filters += filters.length>1? '&' : ''
+
+        filters += 'page='+page
+
+        return filters
+    }
+
+    function loadPacks(page: number = 1) {
         setIsLoading(true)
-        api.get('/packs')
+        api.get('/packs'+getFilters(page))
         .then(
             response => {
                 setPacks(response.data.data)
@@ -125,6 +140,11 @@ const Packs: React.FC = () => {
         setShowForm(false)
     }
 
+    function search(e: React.FormEvent) {
+        e.preventDefault()
+        loadPacks()
+    }
+
     return (
         <Container className='position-relative'>
             <LoadingContainer show={isLoading}/>
@@ -140,7 +160,27 @@ const Packs: React.FC = () => {
                 handleSave={handleSave}
                 handleUpdate={handleUpdate}/>
             <ContentToolBar>
-                <div></div>
+                <Form onSubmit={search}>
+                    <Row>
+                        <Col sm="11">
+                            <Form.Control 
+                                type='text'
+                                placeholder='Buscar pacote didático'
+                                value={searchName}
+                                onChange={(e) => setSearchName(e.target.value)}/>
+                        </Col>
+                        <Col sm="1">
+                            <Button
+                                type='submit'>
+                                <HiSearch />
+                            </Button>
+                        </Col>
+                    </Row>
+                </Form>
+                <PaginatorDefault
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={(page) => loadPacks(page)}/>
                 <div>
                     <Button
                         onClick={() => setShowFrameCourses(true)}>
