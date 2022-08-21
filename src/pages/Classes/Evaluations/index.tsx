@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Button, Col, Container, Row } from 'react-bootstrap';
-import { HiPlus } from 'react-icons/hi';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { HiPlus, HiSearch } from 'react-icons/hi';
 import LoadingContainer from '../../../components/LodingContainer';
 import { useAuth } from '../../../context/auth';
 import { useApi } from '../../../services/api';
@@ -14,6 +14,7 @@ import ContentToolBar from '../../../components/ContentToolBar';
 import { MdChecklist } from 'react-icons/md';
 import GradeForm from './GradeForm';
 import EvaluationForm from './EvaluationForm';
+import PaginatorDefault from '../../../components/PaginatorDefault';
 
 const Evaluations: React.FC = () => {
 
@@ -25,6 +26,7 @@ const Evaluations: React.FC = () => {
     const[evaluations,setEvaluations] = useState<evaluationType[]>([])
     const[totalPages,setTotalPages] = useState(1)
     const[currentPage,setCurrentPage] = useState(1)
+    const[searchName,setSearchName] = useState('') 
 
     const[isLoading,setIsLoading] = useState(false)
     const[selected,setSelected] = useState<evaluationType | undefined>()
@@ -37,9 +39,22 @@ const Evaluations: React.FC = () => {
         loadEvaluations()
     },[])
 
-    function loadEvaluations() {
+    function getFilters(page: number = 1) {
+        let filters = '?'
+
+        if(searchName.trim().length>0)
+            filters += "filters=name:like:"+encodeURI("%"+searchName+"%")
+
+        filters += filters.length>1? '&' : ''
+
+        filters += 'page='+page
+
+        return filters
+    }
+
+    function loadEvaluations(page: number = 1) {
         setIsLoading(true)
-        api.get(`/classes/${class_id}/subjects/${subject_id}/evaluations`)
+        api.get(`/classes/${class_id}/subjects/${subject_id}/evaluations`+getFilters(page))
         .then(
             response => {
                 setEvaluations(response.data.data)
@@ -116,6 +131,11 @@ const Evaluations: React.FC = () => {
         setEvaluations(current => current.map(ceval => ceval.id===evaluation.id? evaluation : ceval))
     }
 
+    function search(e: React.FormEvent) {
+        e.preventDefault()
+        loadEvaluations()
+    }
+
     return (
         <Container className='position-relative'>            
             <LoadingContainer show={isLoading} />
@@ -134,7 +154,27 @@ const Evaluations: React.FC = () => {
                 evaluation={selected}
                 handleClose={closeGradeForm}/>
             <ContentToolBar>
-                <div></div>
+                <Form onSubmit={search}>
+                    <Row>
+                        <Col sm='11'>
+                            <Form.Control
+                                type='text'
+                                value={searchName}
+                                onChange={(e) => setSearchName(e.target.value)}
+                                placeholder='Buscar avaliação' />
+                        </Col>
+                        <Col sm='1'>
+                            <Button
+                                type='submit'>
+                                <HiSearch />
+                            </Button>
+                        </Col>
+                    </Row>
+                </Form>
+                <PaginatorDefault
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={(page) => loadEvaluations(page)} />
                 <div>
                     <Button onClick={() => setShowEvaluationForm(true)}><HiPlus /> Nova avaliação</Button>
                 </div>

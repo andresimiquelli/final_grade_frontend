@@ -11,6 +11,7 @@ import ButtonColumn from '../../../components/ButtonColumn';
 import { FaChalkboardTeacher } from 'react-icons/fa';
 import { TbChecklist } from 'react-icons/tb';
 import LoadingContainer from '../../../components/LodingContainer';
+import PaginatorDefault from '../../../components/PaginatorDefault';
 
 const Journals: React.FC = () => {
 
@@ -30,13 +31,17 @@ const Journals: React.FC = () => {
         setContentTitle("Diários de classe")
         setSelectedMenu(MenuKeys.CLASSES)
         if(class_id)
-            loadJournals(class_id)
+            loadJournals()
     },[ class_id ])
 
-    function loadJournals(id: string) {
+    function getFilters(page: number) {
+        return '?page='+page
+    }
+
+    function loadJournals(page: number = 1) {
         setIsLoading(true)
 
-        api.get('/journals/'+id)
+        api.get('/journals/'+class_id+getFilters(page))
         .then(
             response => {
                 setJournals(response.data.data)
@@ -88,6 +93,10 @@ const Journals: React.FC = () => {
             <LoadingContainer show={isLoading} />
             <ContentToolBar>
                 <div></div>
+                <PaginatorDefault
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={(page) => class_id&& loadJournals(page)} />
                 <div></div>
             </ContentToolBar>
             <Row>
