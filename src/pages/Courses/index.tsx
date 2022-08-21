@@ -128,7 +128,7 @@ const Courses: React.FC = () => {
                 handleSave={handleSave}
                 handleUpdate={handleUpdate}/>
             <ContentToolBar>
-            <Form onSubmit={search}>
+                <Form onSubmit={search}>
                     <Row>
                         <Col sm="11">
                             <Form.Control 

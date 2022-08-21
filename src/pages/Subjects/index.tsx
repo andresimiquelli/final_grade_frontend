@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import subjectType from '../../services/apiTypes/Subject';
 import { useAuth } from '../../context/auth';
 import { useApi } from '../../services/api';
 import { useNav } from '../../context/nav';
 import DefaultTable from '../../components/DefaultTable';
 import { FaEdit, FaTrash } from 'react-icons/fa'
-import { HiPlus } from 'react-icons/hi';
+import { HiPlus, HiSearch } from 'react-icons/hi';
 import LoadingContainer from '../../components/LodingContainer';
 import ContentToolBar from '../../components/ContentToolBar';
 
 import { SubjectDescription } from './styles'
 import SubjectForm from './SubjctForm';
 import ButtonColumn from '../../components/ButtonColumn';
+import PaginatorDefault from '../../components/PaginatorDefault';
 
 const Subjects: React.FC = () => {
 
@@ -24,6 +25,7 @@ const Subjects: React.FC = () => {
     const[totalPages,setTotalPages] = useState(1)
     const[currentPage,setCurrentPage] = useState(1)
     const[isLoading,setIsLoading] = useState(false)
+    const[searchName,setSearchName] = useState('')
 
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<subjectType | undefined>(undefined)
@@ -34,10 +36,23 @@ const Subjects: React.FC = () => {
         setSelectedMenu("subjects")
     },[])
 
-    function loadSubjects() {
+    function getFilters(page: number) {
+        let filters = '?'
+
+        if(searchName.trim().length>0)
+            filters += "filters=name:like:"+encodeURI("%"+searchName+"%")
+
+        filters += filters.length>1? '&' : ''
+
+        filters += 'page='+page
+
+        return filters
+    }
+
+    function loadSubjects(page: number = 1) {
         setIsLoading(true)
 
-        api.get('/subjects')
+        api.get('/subjects'+getFilters(page))
         .then(
             response => {
                 setSubjects(response.data.data)
@@ -104,6 +119,11 @@ const Subjects: React.FC = () => {
         )
     }
 
+    function search(e: React.FormEvent) {
+        e.preventDefault()
+        loadSubjects()
+    }
+
     return (
         <Container>
             <LoadingContainer show={isLoading}/>
@@ -114,7 +134,27 @@ const Subjects: React.FC = () => {
                 handleSave={handleSave}
                 handleUpdate={handleUpdate}/>
             <ContentToolBar>
-                <div>&nbsp;</div>
+                <Form onSubmit={search}>
+                    <Row>
+                        <Col sm="11">
+                            <Form.Control 
+                                type='text'
+                                placeholder='Buscar disciplina'
+                                value={searchName}
+                                onChange={(e) => setSearchName(e.target.value)}/>
+                        </Col>
+                        <Col sm="1">
+                            <Button
+                                type='submit'>
+                                <HiSearch />
+                            </Button>
+                        </Col>
+                    </Row>
+                </Form>
+                <PaginatorDefault
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={(page) => loadSubjects(page)} />
                 <div>
                     <Button onClick={() => setShowForm(true)}><HiPlus /></Button>
                 </div>
