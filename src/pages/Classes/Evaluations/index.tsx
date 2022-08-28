@@ -15,10 +15,11 @@ import { MdChecklist } from 'react-icons/md';
 import GradeForm from './GradeForm';
 import EvaluationForm from './EvaluationForm';
 import PaginatorDefault from '../../../components/PaginatorDefault';
+import { UserType } from '../../../services/apiTypes/User';
 
 const Evaluations: React.FC = () => {
 
-    const { token } = useAuth()
+    const { token, currentUser } = useAuth()
     const api = useApi(token)
     const { setContentTitle, setSelectedMenu } = useNav()
     const { class_id, subject_id} = useParams()
@@ -153,7 +154,7 @@ const Evaluations: React.FC = () => {
                 subjectId={subject_id}
                 evaluation={selected}
                 handleClose={closeGradeForm}/>
-            <ContentToolBar>
+            <ContentToolBar variant={currentUser?.type === UserType.PROF.value? 'bordered' : 'default'}>
                 <Form onSubmit={search}>
                     <Row>
                         <Col sm='11'>

@@ -14,12 +14,14 @@ import { FaEdit, FaTrash, FaUserCheck } from 'react-icons/fa';
 import { HiPlus } from 'react-icons/hi';
 import LessonForm from './LessonForm';
 import AttendanceForm from './AttendanceForm';
+import { UserType } from '../../services/apiTypes/User';
+import PaginatorDefault from '../../components/PaginatorDefault';
 
 const Lessons: React.FC = () => {
 
     const { class_id, subject_id } = useParams()
 
-    const { token } = useAuth()
+    const { token, currentUser } = useAuth()
     const api = useApi(token)
     const { setContentTitle, setSelectedMenu } = useNav()
 
@@ -40,9 +42,9 @@ const Lessons: React.FC = () => {
         }
     },[])
 
-    function loadLessons() {
+    function loadLessons(page: number = 1) {
         setIsLoading(true)
-        api.get(`/classes/${class_id}/subjects/${subject_id}/lessons`)
+        api.get(`/classes/${class_id}/subjects/${subject_id}/lessons?page=${page}`)
         .then(
             response => {
                 setLessons(response.data.data)
@@ -139,8 +141,14 @@ const Lessons: React.FC = () => {
                 classId={class_id}
                 handleClose={closeAttendanceForm}
                 lesson={selected}/>
-            <ContentToolBar>
+            <ContentToolBar variant={currentUser?.type === UserType.PROF.value? 'bordered' : 'default'}>
                 <div></div>
+                <div>
+                    <PaginatorDefault
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onChange={loadLessons} />
+                </div>
                 <div>
                     <Button
                         onClick={() => setShowForm(true)}>

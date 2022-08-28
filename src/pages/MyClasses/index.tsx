@@ -14,6 +14,7 @@ import { TbChecklist } from 'react-icons/tb';
 import ContentHeader from '../../components/ContentHeader';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import ContentToolBar from '../../components/ContentToolBar';
+import { UserType } from '../../services/apiTypes/User';
 
 const MyClasses: React.FC = () => {
 
@@ -51,7 +52,7 @@ const MyClasses: React.FC = () => {
             <Row>
                 <Col className='p-0'>
                     <LoadingContainer show={isLoading}/>
-                    <ContentToolBar>
+                    <ContentToolBar variant={currentUser?.type === UserType.PROF.value? 'bordered' : 'default'}>
                         <div></div>
                         <div>
                             <PaginatorDefault 
