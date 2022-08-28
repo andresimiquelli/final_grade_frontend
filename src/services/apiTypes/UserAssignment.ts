@@ -1,11 +1,11 @@
 import classType from "./Class";
-import subjectType from "./Subject";
+import packModuleSubjectType from "./PackModuleSubject";
 import userType from "./User";
 
 type userAssignmentType = {
     id: number;
     teacher: userType;
-    subject: subjectType;
+    subject: packModuleSubjectType;
     cclass: classType;
     start_at: string;
     end_at?: string;

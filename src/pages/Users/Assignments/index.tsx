@@ -114,7 +114,7 @@ const Assignments: React.FC = () => {
     function editAssignment(assignment: userAssignmentType) {
         setSelected(assignment)
         setSelectedClass(assignment.cclass)
-        setSelectedSubject({ subject: assignment.subject, id: 0} as packModuleSubjectType)
+        setSelectedSubject(assignment.subject)
         setShowForm(true)
     }
 
@@ -149,7 +149,7 @@ const Assignments: React.FC = () => {
                    assignments.map(assignment => 
                     <tr key={assignment.id}>
                         <td>{assignment.cclass.name}</td>
-                        <td>{assignment.subject.name}</td>
+                        <td>{assignment.subject.subject.name}</td>
                         <td>{dateRenderer(assignment.start_at)}</td>
                         <td>{dateRenderer(assignment.end_at)}</td>
                         <td>

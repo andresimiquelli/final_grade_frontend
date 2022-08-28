@@ -24,7 +24,7 @@ interface AssignmentFormProps {
 
 type dataType = {
     class_id?: number;
-    subject_id?: number;
+    pack_module_subject_id?: number;
     start_at: string;
     end_at?: string;
 }
@@ -65,7 +65,7 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ( props ) => {
 
         if(!props.assignment) {
             data.class_id = props.cclass?.id
-            data.subject_id = props.subject?.id
+            data.pack_module_subject_id = props.subject?.id
         }
 
         if(end.length > 0)
