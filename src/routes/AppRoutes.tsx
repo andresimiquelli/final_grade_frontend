@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import DefaultLayout from '../pages/DefaultLayout';
+import DefaultLayout from '../layouts/DefaultLayout';
 
 import Dashboard from '../pages/Dashboard';
 import Students from '../pages/Students';
@@ -35,7 +35,6 @@ const AppRoutes: React.FC = () => {
                 <Route path='packs/:pack_id/modules/:module_id/subjects' element={<ModuleSubjects/>} />
                 <Route path='lessons/:class_id/:subject_id' element={<Lessons />} />
                 <Route path='evaluations/:class_id/:subject_id' element={<Evaluations />} />
-                <Route element={<Dashboard />} />
             </Routes>
         </DefaultLayout>
     );
