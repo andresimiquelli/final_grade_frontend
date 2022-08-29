@@ -13,4 +13,13 @@ type finalgradeType = {
     subject?: subjectType;
 }
 
+export type finalgradeReportType = {
+    enrollment_id: number;
+    pack_module_subject_id: number;
+    class_id: number;
+    student_name: string;
+    absences: number;
+    grade: string | number;
+}
+
 export default finalgradeType;

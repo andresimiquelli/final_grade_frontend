@@ -12,6 +12,7 @@ import { FaChalkboardTeacher } from 'react-icons/fa';
 import { TbChecklist } from 'react-icons/tb';
 import LoadingContainer from '../../../components/LodingContainer';
 import PaginatorDefault from '../../../components/PaginatorDefault';
+import { GoTasklist } from 'react-icons/go';
 
 const Journals: React.FC = () => {
 
@@ -59,6 +60,7 @@ const Journals: React.FC = () => {
                     <tr>
                         <th>Disciplina</th>
                         <th>Módulo</th>
+                        <th>Status</th>
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
@@ -68,15 +70,20 @@ const Journals: React.FC = () => {
                         <tr>
                             <td>{journal.subject_name}</td>
                             <td>{journal.pack_module_name}</td>
+                            <td>{journal.status}</td>
                             <td>
                                 <ButtonColumn>
-                                    <button onClick={() => navigate(`/lessons/${class_id}/${journal.subject_id}`)}>
+                                    <button onClick={() => navigate(`/lessons/${class_id}/${journal.pack_module_subject_id}`)}>
                                         <FaChalkboardTeacher />
                                         <span>Aulas</span>
                                     </button>
-                                    <button onClick={() => navigate(`/evaluations/${class_id}/${journal.subject_id}`)}>
+                                    <button onClick={() => navigate(`/evaluations/${class_id}/${journal.pack_module_subject_id}`)}>
                                         <TbChecklist />
                                         <span>Avaliações</span>
+                                    </button>
+                                    <button onClick={() => navigate(`/finalgrade/${class_id}/${journal.pack_module_subject_id}`)}>
+                                        <GoTasklist />
+                                        <span>Fechamento</span>
                                     </button>
                                 </ButtonColumn>
                             </td>

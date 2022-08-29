@@ -11,7 +11,7 @@ import LoadingContainer from '../../components/LodingContainer';
 import ButtonColumn from '../../components/ButtonColumn';
 import { FaChalkboardTeacher } from 'react-icons/fa';
 import { TbChecklist } from 'react-icons/tb';
-import ContentHeader from '../../components/ContentHeader';
+import { GoTasklist } from 'react-icons/go';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import ContentToolBar from '../../components/ContentToolBar';
 import { UserType } from '../../services/apiTypes/User';
@@ -79,6 +79,10 @@ const MyClasses: React.FC = () => {
                                             <button onClick={() => navigate(`/evaluations/${assignment.cclass.id}/${assignment.subject.id}`)}>
                                                 <TbChecklist />
                                                 <span>Avaliações</span>
+                                            </button>
+                                            <button onClick={() => navigate(`finalgrade/${assignment.cclass.id}/${assignment.subject.id}`)}>
+                                                <GoTasklist />
+                                                <span>Fechamento</span>
                                             </button>
                                         </ButtonColumn>
                                     </div>

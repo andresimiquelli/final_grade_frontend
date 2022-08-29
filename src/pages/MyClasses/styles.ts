@@ -13,7 +13,7 @@ export const Card = styled.div`
     padding: 1.5rem 1.5rem 0 1.5rem;
     border: 2px solid ${props => props.theme.colors.gray_10};
     border-radius: 7px;
-    width: 32%;
+    width: 45%;
     margin-top: 1.5rem;
 
     > .anchor-area {
@@ -26,5 +26,9 @@ export const Card = styled.div`
         > h4.card-subtitle {
             font-size: .95rem;
         }
+    }
+
+    @media(max-width: ${props => props.theme.breacks.large}) {
+        width: 100%;
     }
 `;

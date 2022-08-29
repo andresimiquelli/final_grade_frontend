@@ -24,7 +24,14 @@ const theme = {
         error_primary: '#B20000',
         error_secondary: '#FFB2B2',
         info_primary: '#1A227A',
-        info_secondary: '#99C8F2'
+        info_secondary: '#99C8F2',
+    },
+    breacks: {
+        xsmall: '256px',
+        small: '320px',
+        medium: '768px',
+        large: '1024px',
+        xlarge: '1920px',
     }
 } as themeType
 

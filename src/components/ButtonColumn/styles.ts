@@ -37,6 +37,12 @@ export const Container = styled.div`
         > span {
             padding: 0 0 0 7px;
         }
+
+        @media(max-width: ${props => props.theme.breacks.large}) {
+            > span {
+                font-size: .85rem;
+            }
+        }
     }
 
     > button.secondary {
