@@ -48,7 +48,7 @@ const MyClasses: React.FC = () => {
     }
 
     return (
-        <Container>
+        <Container fluid>
             <Row>
                 <Col className='p-0'>
                     <LoadingContainer show={isLoading}/>

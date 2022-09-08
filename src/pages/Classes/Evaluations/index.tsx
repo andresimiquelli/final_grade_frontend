@@ -138,7 +138,7 @@ const Evaluations: React.FC = () => {
     }
 
     return (
-        <Container className='position-relative'>            
+        <Container className='position-relative' fluid>            
             <LoadingContainer show={isLoading} />
             <EvaluationForm
                 show={showEvaluationForm}

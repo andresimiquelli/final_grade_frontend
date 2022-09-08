@@ -119,7 +119,7 @@ const Courses: React.FC = () => {
     }
 
     return (
-        <Container className='position-relative'>
+        <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading} />
             <CourseForm 
                 show={showForm}

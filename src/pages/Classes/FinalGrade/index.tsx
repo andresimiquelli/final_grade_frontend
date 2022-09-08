@@ -60,7 +60,7 @@ const FinalGrade: React.FC = () => {
     }
 
     return (
-        <Container>
+        <Container fluid>
             <LoadingContainer show={isLoading}/>
             <Row>
                 <Col className='p-0'>

@@ -125,7 +125,7 @@ const Subjects: React.FC = () => {
     }
 
     return (
-        <Container>
+        <Container fluid>
             <LoadingContainer show={isLoading}/>
             <SubjectForm
                 show={showForm}
