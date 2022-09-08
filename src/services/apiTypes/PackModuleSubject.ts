@@ -1,4 +1,3 @@
-import packModuleType from "./PackModule";
 import subjectType from "./Subject";
 
 type packModuleSubjectType = {

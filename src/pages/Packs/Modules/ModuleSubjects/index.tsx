@@ -142,7 +142,7 @@ const ModuleSubjects: React.FC = () => {
     }
 
     return (
-        <Container className='poition-relative'>
+        <Container className='poition-relative' fluid>
             <LoadingContainer show={isLoading}/>
             <SubjectFrame 
                 show={showSubjectFrame}

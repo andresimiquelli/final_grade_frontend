@@ -1,5 +1,5 @@
 import enrollmentType from "./Enrollment";
-import subjectType from "./Subject";
+import packModuleSubjectType from "./PackModuleSubject";
 
 type finalgradeType = {
     id: number;
@@ -10,7 +10,7 @@ type finalgradeType = {
     created_at: string;
     updated_at: string;
     enrollment?: enrollmentType;
-    subject?: subjectType;
+    subject?: packModuleSubjectType;
 }
 
 export type finalgradeReportType = {

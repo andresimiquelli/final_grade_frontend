@@ -11,4 +11,9 @@ type journalType = {
     status?: number;
 }
 
+export const JournalStatus = {
+    OPEN: 0,
+    CLOSED: 1
+}
+
 export default journalType;

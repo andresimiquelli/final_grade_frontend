@@ -5,7 +5,7 @@ import ContentToolBar from '../../../components/ContentToolBar';
 import { useAuth } from '../../../context/auth';
 import { useNav, MenuKeys } from '../../../context/nav';
 import { useApi } from '../../../services/api';
-import journalType from '../../../services/apiTypes/Journal';
+import journalType, { JournalStatus } from '../../../services/apiTypes/Journal';
 import DefaultTable from '../../../components/DefaultTable';
 import ButtonColumn from '../../../components/ButtonColumn';
 import { FaChalkboardTeacher } from 'react-icons/fa';
@@ -13,6 +13,7 @@ import { TbChecklist } from 'react-icons/tb';
 import LoadingContainer from '../../../components/LodingContainer';
 import PaginatorDefault from '../../../components/PaginatorDefault';
 import { GoTasklist } from 'react-icons/go';
+import { RiCheckboxBlankCircleLine, RiCheckboxCircleFill } from 'react-icons/ri';
 
 const Journals: React.FC = () => {
 
@@ -70,7 +71,10 @@ const Journals: React.FC = () => {
                         <tr>
                             <td>{journal.subject_name}</td>
                             <td>{journal.pack_module_name}</td>
-                            <td>{journal.status}</td>
+                            <td>
+                                {journal.status===JournalStatus.CLOSED? 
+                                <><RiCheckboxCircleFill /> Concuído</> : <><RiCheckboxBlankCircleLine /> Aberto</> }
+                            </td>
                             <td>
                                 <ButtonColumn>
                                     <button onClick={() => navigate(`/lessons/${class_id}/${journal.pack_module_subject_id}`)}>
@@ -83,7 +87,7 @@ const Journals: React.FC = () => {
                                     </button>
                                     <button onClick={() => navigate(`/finalgrade/${class_id}/${journal.pack_module_subject_id}`)}>
                                         <GoTasklist />
-                                        <span>Fechamento</span>
+                                        <span>Relatório</span>
                                     </button>
                                 </ButtonColumn>
                             </td>
