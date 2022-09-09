@@ -1,7 +1,9 @@
 import axios, { Axios } from "axios";
 
+export const baseUrl = 'http://127.0.0.1:8000/api/v1'
+
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000/api/v1'
+    baseURL: baseUrl
 })
 
 function useApi(token: string = ""): Axios {

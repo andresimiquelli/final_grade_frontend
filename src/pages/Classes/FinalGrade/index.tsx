@@ -10,7 +10,7 @@ import DefaultTable from '../../../components/DefaultTable';
 import ContentToolBar from '../../../components/ContentToolBar';
 import { RiCheckboxCircleFill } from 'react-icons/ri';
 import ConfirmationModal from '../../../components/ConfirmationModal';
-import journalType from '../../../services/apiTypes/Journal';
+import JournalService, { statusPermissions } from  '../../../services/JournalService';
 
 type dataType = {
     enrollment_id: number;
@@ -23,19 +23,12 @@ type dataTypeMany = {
     grades: dataType[];
 }
 
-const statusPermissions = {
-    LOADING: -1,
-    OPEN: 0,
-    CLOSED: 1,
-    ERROR: 2
-}
-
 const FinalGrade: React.FC = () => {
 
     const { class_id, subject_id } = useParams()
     const { setContentTitle } = useNav()
     const { token } = useAuth()
-    const api = useApi(token)
+    const api = useApi(token)    
 
     const[isLoading,setIsLoading] = useState(false)
     const[reports,setReports] = useState<finalgradeReportType[]>([])
@@ -60,20 +53,8 @@ const FinalGrade: React.FC = () => {
     }
 
     function loadJournalStatus() {
-        api.get(`/journals/${class_id}/${subject_id}`)
-        .then(
-            response => {
-                const journal = response.data as journalType;
-                setIsEditable(journal.status? journal.status : statusPermissions.ERROR)
-            }
-        )
-        .catch(response => {
-            if(response.request.status)
-                if(response.request.status === 404)
-                    setIsEditable(0)
-                else
-                    setIsEditable(statusPermissions.ERROR)
-        })
+        JournalService.getStatus(class_id, subject_id, token)
+        .then(status => setIsEditable(status))
     }
 
     function closeJournal() {

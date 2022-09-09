@@ -73,7 +73,7 @@ const Journals: React.FC = () => {
                             <td>{journal.pack_module_name}</td>
                             <td>
                                 {journal.status===JournalStatus.CLOSED? 
-                                <><RiCheckboxCircleFill /> Concuído</> : <><RiCheckboxBlankCircleLine /> Aberto</> }
+                                <><RiCheckboxCircleFill /> Concluído</> : <><RiCheckboxBlankCircleLine /> Aberto</> }
                             </td>
                             <td>
                                 <ButtonColumn>
