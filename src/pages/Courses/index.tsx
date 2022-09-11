@@ -14,6 +14,7 @@ import { courseLevelRederer } from '../../utils/courseLevelRenderer';
 import ButtonColumn from '../../components/ButtonColumn';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import { extractError, getMessage } from '../../utils/errorHandler';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const Courses: React.FC = () => {
 
@@ -29,6 +30,7 @@ const Courses: React.FC = () => {
     const[isLoading,setIsLoading] = useState(false)
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<courseType | undefined>(undefined)
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     useEffect(() => {
         setSelectedMenu(MenuKeys.COURSES)
@@ -83,6 +85,23 @@ const Courses: React.FC = () => {
         setCourses(current => current.map(course => nCourse.id===course.id? nCourse : course))
     }
 
+    function deleteCourse(course: courseType) {
+        setSelected(course)
+        setShowDeleteModal(true)
+    }
+
+    function deleteCourseConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/courses/${selected?.id}`)
+        .then(() => setCourses(current => current.filter(course => course.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteCourseCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -105,7 +124,7 @@ const Courses: React.FC = () => {
                                     onClick={() => editCourse(course)}>
                                         <FaEdit />
                                 </button> &nbsp;
-                                <button className='secondary'><FaTrash /></button>
+                                <button className='secondary' onClick={() => deleteCourse(course)}><FaTrash /></button>
                             </ButtonColumn>
                         </td>
                     </tr> )
@@ -123,6 +142,15 @@ const Courses: React.FC = () => {
     return (
         <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading} />
+            <ConfirmationModal
+                title='Excluir curso'
+                subtitle={`Deseja confirmar a exclusão de ${selected?.name}?`}
+                show={showDeleteModal}
+                onCancel={deleteCourseCancel}
+                onClose={deleteCourseCancel}
+                onConfirm={deleteCourseConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <CourseForm 
                 show={showForm}
                 course={selected}

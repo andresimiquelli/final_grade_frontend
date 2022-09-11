@@ -5,9 +5,9 @@ export function getMessage(type: number = 0) {
     switch(type) {
         case 1: return 'Erro de validação.'
         case 2: return 'O servidor não conseguiu processar a requisição.'
-        case 3: return 'O banco de dados rejeitou a operação.'
+        case 3: return 'O banco de dados rejeitou a operação para garantir a integridade dos dados.'
         case 4: return 'Acesso negado ou não autorizado.'
-        case 5: return 'Sem conexão com o serviço.\n Verifique sua Internet.'
+        case 5: return 'Sem conexão com o serviço. Verifique sua Internet.'
         default: return 'Erro não definido.'
     }
 }
@@ -36,6 +36,9 @@ export function extractError(axiosError: AxiosError): errorType {
             break;
         case 408: 
             error = getError(axiosError, 2, 408) 
+            break;
+        case 418: 
+            error = getError(axiosError, 3, 418) 
             break;
         case 0:
             error = getError(axiosError, 5, 0) 

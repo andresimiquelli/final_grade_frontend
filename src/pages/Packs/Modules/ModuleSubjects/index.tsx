@@ -18,6 +18,7 @@ import subjectType from '../../../../services/apiTypes/Subject';
 import ModuleSubjectForm from './ModuleSubjectForm';
 import PaginatorDefault from '../../../../components/PaginatorDefault';
 import { extractError } from '../../../../utils/errorHandler';
+import ConfirmationModal from '../../../../components/ConfirmationModal';
 
 const ModuleSubjects: React.FC = () => {
 
@@ -37,6 +38,7 @@ const ModuleSubjects: React.FC = () => {
 
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<packModuleSubjectType | undefined>()
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     useEffect(() => {
         setContentTitle("Disciplinas")
@@ -102,6 +104,23 @@ const ModuleSubjects: React.FC = () => {
         setSelected(undefined)
     }
 
+    function deleteSubject(subject: packModuleSubjectType) {
+        setSelected(subject)
+        setShowDeleteModal(true)
+    }
+
+    function deleteSubjectConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/packs/${pack_id}/modules/${module_id}/subjects/${selected?.id}`)
+        .then(() => setSubjects(current => current.filter(subject => subject.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteSubjectCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -125,7 +144,7 @@ const ModuleSubjects: React.FC = () => {
                                         onClick={() => editSubject(subject)}>
                                             <FaEdit />
                                     </button>
-                                    <button className='secondary'><FaTrash /></button>
+                                    <button className='secondary' onClick={() => deleteSubject(subject)}><FaTrash /></button>
                                 </ButtonColumn>
                             </td>
                         </tr>
@@ -147,6 +166,15 @@ const ModuleSubjects: React.FC = () => {
     return (
         <Container className='poition-relative' fluid>
             <LoadingContainer show={isLoading}/>
+            <ConfirmationModal 
+                title='Excluir disciplina'
+                subtitle={`Deseja confirmar a exclusão de ${selected?.subject.name}?`}
+                show={showDeleteModal}
+                onCancel={deleteSubjectCancel}
+                onClose={deleteSubjectCancel}
+                onConfirm={deleteSubjectConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <SubjectFrame 
                 show={showSubjectFrame}
                 handleSelect={selectSubject}

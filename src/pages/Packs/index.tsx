@@ -17,6 +17,7 @@ import { IoExtensionPuzzleSharp } from 'react-icons/io5';
 import ButtonColumn from '../../components/ButtonColumn';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import { extractError } from '../../utils/errorHandler';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const Packs: React.FC = () => {
 
@@ -34,7 +35,8 @@ const Packs: React.FC = () => {
     const[showFrameCourses,setShowFrameCourses] = useState(false)
     const[showForm,setShowForm] = useState(false)
     const[selectedCourse,setSelectedCourse] = useState<courseType | undefined>()
-    const[seleted,setSelected] = useState<packType | undefined>()
+    const[selected,setSelected] = useState<packType | undefined>()
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     useEffect(() => {
         setSelectedMenu(MenuKeys.PACKS)
@@ -88,6 +90,24 @@ const Packs: React.FC = () => {
         navigate('/packs/'+pack_id+'/modules')
     }
 
+    function deletePack(pack: packType) {
+        setSelected(pack)
+        setShowDeleteModal(true)
+    }
+
+    function deletePackConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/packs/${selected?.id}`)
+        .then(() => setPacks(current => current.filter(pack => pack.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deletePackCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
+
     function showTable() {
         return (
             <DefaultTable>
@@ -112,7 +132,7 @@ const Packs: React.FC = () => {
                                         onClick={() => editPack(pack)}>
                                             <FaEdit />
                                     </button>
-                                    <button className='secondary'><FaTrash /></button>
+                                    <button className='secondary' onClick={() => deletePack(pack)}><FaTrash /></button>
                                     <button className='ml-1' onClick={() => toModules(pack.id)}>
                                         <IoExtensionPuzzleSharp />
                                         <span>Módulos</span>
@@ -150,13 +170,22 @@ const Packs: React.FC = () => {
     return (
         <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading}/>
+            <ConfirmationModal
+                title='Excluir pacote didático'
+                subtitle={`Deseja confirmar a exclusão de ${selected?.name}?`}
+                show={showDeleteModal}
+                onCancel={deletePackCancel}
+                onClose={deletePackCancel}
+                onConfirm={deletePackConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <CourseFrame 
                 show={showFrameCourses}
                 handleClose={closeFrameCourse}
                 handleSelect={hadleSelect}/>
             <PackForm 
                 course={selectedCourse}
-                pack={seleted}
+                pack={selected}
                 show={showForm}
                 handleClose={() => setShowForm(false)}
                 handleSave={handleSave}

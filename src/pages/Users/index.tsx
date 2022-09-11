@@ -16,6 +16,7 @@ import { TagType } from './styles'
 import ButtonColumn from '../../components/ButtonColumn';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import { extractError } from '../../utils/errorHandler';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const Users: React.FC = () => {
 
@@ -34,6 +35,7 @@ const Users: React.FC = () => {
 
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<userType | undefined>(undefined)
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     useEffect(() => {
         setSelectedMenu(MenuKeys.USERS)
@@ -104,6 +106,23 @@ const Users: React.FC = () => {
         setUsers(nUsers)
     }
 
+    function deleteUser(user: userType) {
+        setSelected(user)
+        setShowDeleteModal(true)
+    }
+
+    function deleteUserConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/users/${selected?.id}`)
+        .then(() => setUsers(current => current.filter(user => user.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteUserCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
     function showTagType(type: number) {
 
         let text = 'No type'
@@ -156,7 +175,7 @@ const Users: React.FC = () => {
                                         onClick={() => editUser(user)}>
                                             <FaUserEdit />
                                     </button> &nbsp;
-                                    <button className='secondary'><FaTrash /></button>
+                                    <button className='secondary' onClick={() => deleteUser(user)}><FaTrash /></button>
                                     
                                 </ButtonColumn>
                             </td>
@@ -175,6 +194,15 @@ const Users: React.FC = () => {
     return (
        <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading} />
+            <ConfirmationModal
+                title='Excluir usuário'
+                subtitle={`Deseja confirmar a exclusão de ${selected?.name}?`}
+                show={showDeleteModal}
+                onCancel={deleteUserCancel}
+                onClose={deleteUserCancel}
+                onConfirm={deleteUserConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <UserForm 
                 show={showForm} 
                 handleClose={closeForm}

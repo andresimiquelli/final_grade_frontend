@@ -18,6 +18,7 @@ import PaginatorDefault from '../../../components/PaginatorDefault';
 import { UserType } from '../../../services/apiTypes/User';
 import JournalService, { statusPermissions } from '../../../services/JournalService';
 import { extractError } from '../../../utils/errorHandler';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 
 const Evaluations: React.FC = () => {
 
@@ -35,6 +36,7 @@ const Evaluations: React.FC = () => {
     const[selected,setSelected] = useState<evaluationType | undefined>()
     const[showGradeForm,setShowGradeForm] = useState(false)
     const[showEvaluationForm,setShowEvaluationForm] = useState(false)
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     const[isEditable,setIsEditable] = useState<number>(statusPermissions.LOADING)
 
@@ -79,6 +81,23 @@ const Evaluations: React.FC = () => {
         setShowEvaluationForm(true)
     }
 
+    function deleteEvaluation(evaluation: evaluationType) {
+        setSelected(evaluation)
+        setShowDeleteModal(true)
+    }
+
+    function deleteEvaluationConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/classes/${class_id}/subjects/${subject_id}/evaluations/${selected?.id}`)
+        .then(() => setEvaluations(current => current.filter(evaluation => evaluation.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteEvaluationCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -109,7 +128,11 @@ const Evaluations: React.FC = () => {
                                             onClick={() => edit(evaluation)}>
                                                 <FaEdit />
                                         </button>
-                                        <button className='secondary'><FaTrash /></button>
+                                        <button
+                                            onClick={() => deleteEvaluation(evaluation)}
+                                            className='secondary'>
+                                                <FaTrash />
+                                        </button>
                                     </>
                             }
                                     
@@ -154,6 +177,15 @@ const Evaluations: React.FC = () => {
     return (
         <Container className='position-relative' fluid>            
             <LoadingContainer show={isLoading} />
+            <ConfirmationModal
+                title='Excluir avaliação'
+                subtitle={`Deseja confirmar a exclusão de ${selected?.name}?`}
+                show={showDeleteModal}
+                onCancel={deleteEvaluationCancel}
+                onClose={deleteEvaluationCancel}
+                onConfirm={deleteEvaluationConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <EvaluationForm
                 show={showEvaluationForm}
                 handleClose={closeEvaluationForm} 

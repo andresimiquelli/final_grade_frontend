@@ -18,6 +18,7 @@ import { UserType } from '../../services/apiTypes/User';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import JournalService, { statusPermissions } from '../../services/JournalService';
 import { extractError } from '../../utils/errorHandler';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const Lessons: React.FC = () => {
 
@@ -35,6 +36,7 @@ const Lessons: React.FC = () => {
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<lessonType | undefined>()
     const[showAttendanceForm, setShowAttendanceForm] = useState(false)
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     const[isEditable,setIsEditable] = useState<number>(statusPermissions.LOADING)
 
@@ -91,6 +93,23 @@ const Lessons: React.FC = () => {
         setShowAttendanceForm(false)
     }
 
+    function deleteLesson(lesson: lessonType) {
+        setSelected(lesson)
+        setShowDeleteModal(true)
+    }
+
+    function deleteLessonConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/classes/${class_id}/subjects/${subject_id}/lessons/${selected?.id}`)
+        .then(() => setLessons(current => current.filter(lesson => lesson.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteLessonCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -122,7 +141,7 @@ const Lessons: React.FC = () => {
                                                 className='secondary'>
                                                 <FaEdit />
                                             </button>
-                                            <button className='secondary'>
+                                            <button className='secondary' onClick={() => deleteLesson(lesson)}>
                                                 <FaTrash />
                                             </button>
                                         </>
@@ -142,6 +161,15 @@ const Lessons: React.FC = () => {
     return (
         <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading} />
+            <ConfirmationModal
+                title='Excluir aula'
+                subtitle={`Deseja confirmar a exclusão da aula do dia ${dateRenderer(selected?.reference)}`}
+                show={showDeleteModal}
+                onCancel={deleteLessonCancel}
+                onClose={deleteLessonCancel}
+                onConfirm={deleteLessonConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <LessonForm 
                 show={showForm} 
                 lesson={selected}

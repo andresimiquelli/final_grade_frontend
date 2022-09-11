@@ -19,6 +19,7 @@ import EnrollmentForm from './EnrollmentForm';
 import studentType from '../../../services/apiTypes/Student';
 import { extractError } from '../../../utils/errorHandler';
 import PaginatorDefault from '../../../components/PaginatorDefault';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 
 const Enrollments: React.FC = () => {
 
@@ -37,6 +38,7 @@ const Enrollments: React.FC = () => {
     const[selectedClass,setSelectedClass] = useState<classType | undefined>()
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<enrollmentType | undefined>()
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     useEffect(() => {
         setContentTitle('Matrículas')
@@ -76,6 +78,23 @@ const Enrollments: React.FC = () => {
         )
     }
 
+    function deleteEnrollment(enrollment: enrollmentType) {
+        setSelected(enrollment)
+        setShowDeleteModal(true)
+    }
+
+    function deleteEnrollmentConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/enrollments/${selected?.id}`)
+        .then(() => setEnrollments(current => current.filter(enrollment => enrollment.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteEnrollmentCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -101,7 +120,7 @@ const Enrollments: React.FC = () => {
                                     <button className='secondary'>
                                         <FaEdit onClick={() => editEnrollment(enrollment)}/>
                                     </button>
-                                    <button className='secondary'>
+                                    <button className='secondary' onClick={() => deleteEnrollment(enrollment)}>
                                         <FaTrash />
                                     </button>
                                 </ButtonColumn>
@@ -151,6 +170,15 @@ const Enrollments: React.FC = () => {
     return (
         <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading}/>
+            <ConfirmationModal
+                title='Excluir matrícula'
+                subtitle={`Deseja confirmar a exclusão de ${selected?.student?.name}?`}
+                show={showDeleteModal}
+                onCancel={deleteEnrollmentCancel}
+                onClose={deleteEnrollmentCancel}
+                onConfirm={deleteEnrollmentConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <ClassFrame 
                 show={showClassFrame}
                 handleClose={closeClassFrame}

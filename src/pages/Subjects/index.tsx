@@ -15,6 +15,7 @@ import SubjectForm from './SubjctForm';
 import ButtonColumn from '../../components/ButtonColumn';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import { extractError } from '../../utils/errorHandler';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const Subjects: React.FC = () => {
 
@@ -29,6 +30,7 @@ const Subjects: React.FC = () => {
     const[searchName,setSearchName] = useState('')
 
     const[showForm,setShowForm] = useState(false)
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
     const[selected,setSelected] = useState<subjectType | undefined>(undefined)
 
     useEffect(() => {
@@ -65,6 +67,23 @@ const Subjects: React.FC = () => {
             () => setIsLoading(false)
         )
         .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteSubject(subject: subjectType) {
+        setSelected(subject)
+        setShowDeleteModal(true)
+    }
+
+    function deleteSubjectConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/subjects/${selected?.id}`)
+        .then(() => setSubjects(current => current.filter(subject => subject.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteSubjectCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
     }
 
     function editSubject(subject: subjectType) {
@@ -108,7 +127,7 @@ const Subjects: React.FC = () => {
                                     <button className='secondary' onClick={() => editSubject(subject)}>
                                         <FaEdit />
                                     </button> &nbsp;
-                                    <button className='secondary'>
+                                    <button className='secondary' onClick={() => deleteSubject(subject)}>
                                         <FaTrash />
                                     </button>
                                 </ButtonColumn>
@@ -129,6 +148,15 @@ const Subjects: React.FC = () => {
     return (
         <Container fluid>
             <LoadingContainer show={isLoading}/>
+            <ConfirmationModal 
+                title='Excluir disciplina'
+                subtitle={`Deseja confirmar a exclusão de ${selected?.name}?`}
+                show={showDeleteModal}
+                onCancel={deleteSubjectCancel}
+                onClose={deleteSubjectCancel}
+                onConfirm={deleteSubjectConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <SubjectForm
                 show={showForm}
                 subject={selected}

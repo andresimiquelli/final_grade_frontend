@@ -16,6 +16,7 @@ import packType from '../../../services/apiTypes/Pack';
 import ModuleForm from './ModuleForm';
 import PaginatorDefault from '../../../components/PaginatorDefault';
 import { extractError } from '../../../utils/errorHandler';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 
 const Modules: React.FC = () => {
 
@@ -33,6 +34,7 @@ const Modules: React.FC = () => {
     const[isLoading,setIsLoading] = useState(false)
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<packModuleType | undefined>()
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     useEffect(() => {
         setContentTitle("Módulos")
@@ -94,6 +96,23 @@ const Modules: React.FC = () => {
         setShowForm(true)
     }
 
+    function deleteModule(module: packModuleType) {
+        setSelected(module)
+        setShowDeleteModal(true)
+    }
+
+    function deleteModuleConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/packs/${pack_id}/modules/${selected?.id}`)
+        .then(() => setModules(current => current.filter(module => module.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteModuleCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -119,7 +138,7 @@ const Modules: React.FC = () => {
                                         onClick={() => editModule(module)}>
                                             <FaEdit/>
                                     </button>
-                                    <button className='secondary'><FaTrash/></button>
+                                    <button className='secondary' onClick={() => deleteModule(module)}><FaTrash/></button>
                                     <button
                                         className='ml-1'
                                         onClick={() => { navigate(`/packs/${pack_id}/modules/${module.id}/subjects`) }}>
@@ -138,6 +157,15 @@ const Modules: React.FC = () => {
     return (
         <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading}/>
+            <ConfirmationModal
+                title='Excluir módulo'
+                subtitle={`Deseja confirmar a exclusão de ${selected?.name}?`}
+                show={showDeleteModal}
+                onCancel={deleteModuleCancel}
+                onClose={deleteModuleCancel}
+                onConfirm={deleteModuleConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <ModuleForm 
                 show={showForm}
                 pack={pack}

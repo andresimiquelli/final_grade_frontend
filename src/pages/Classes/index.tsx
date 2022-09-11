@@ -18,6 +18,7 @@ import packType from '../../services/apiTypes/Pack';
 import ClassForm from './ClassForm';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import { extractError } from '../../utils/errorHandler';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const Classes: React.FC = () => {
 
@@ -36,6 +37,7 @@ const Classes: React.FC = () => {
     const[selectedPack,setSelectedPack] = useState<packType | undefined>()
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<classType | undefined>()
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     useEffect(() => {
         setContentTitle("Turmas")
@@ -73,6 +75,23 @@ const Classes: React.FC = () => {
         .catch( error => addErrorMessage(extractError(error)))
     }
 
+    function deleteClass(cclass: classType) {
+        setSelected(cclass)
+        setShowDeleteModal(true)
+    }
+
+    function deleteClassConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/classes/${selected?.id}`)
+        .then(() => setClasses(current => current.filter(cclass => cclass.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteClassCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
     function showTable() { 
         return (
             <DefaultTable>
@@ -104,7 +123,11 @@ const Classes: React.FC = () => {
                                         onClick={() => editClass(cclass)}>
                                         <FaEdit />
                                     </button>
-                                    <button className='secondary'><FaTrash /></button>
+                                    <button 
+                                        onClick={() => deleteClass(cclass)}
+                                        className='secondary'>
+                                            <FaTrash />
+                                    </button>
                                 </ButtonColumn>
                             </td>
                         </tr>
@@ -153,6 +176,15 @@ const Classes: React.FC = () => {
     return (
         <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading}/>
+            <ConfirmationModal
+                title='Excluir turma'
+                subtitle={`Deseja confirmar a exclusão de ${selected?.name}?`}
+                show={showDeleteModal}
+                onCancel={deleteClassCancel}
+                onClose={deleteClassCancel}
+                onConfirm={deleteClassConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <PackFrame 
                 show={showPackFrame}
                 handleSelect={selectPack}

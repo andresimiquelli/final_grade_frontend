@@ -14,6 +14,7 @@ import LoadingContainer from '../../components/LodingContainer';
 import ButtonColumn from '../../components/ButtonColumn';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import { extractError } from '../../utils/errorHandler';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const Students: React.FC = () => {
 
@@ -32,6 +33,7 @@ const Students: React.FC = () => {
 
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<studentType | undefined>(undefined)
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     useEffect(() => {
         setSelectedMenu(MenuKeys.STUDENTS)
@@ -96,6 +98,23 @@ const Students: React.FC = () => {
         }))
     }
 
+    function deleteStudent(subject: studentType) {
+        setSelected(subject)
+        setShowDeleteModal(true)
+    }
+
+    function deleteStudentConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/students/${selected?.id}`)
+        .then(() => setStudents(current => current.filter(student => student.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteStudentCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -122,7 +141,7 @@ const Students: React.FC = () => {
                                         onClick={() => editStudent(student)}>
                                             <FaUserEdit />
                                     </button> &nbsp;
-                                    <button className='secondary'><FaTrash /></button>
+                                    <button className='secondary' onClick={() => deleteStudent(student)}><FaTrash /></button>
                                 </ButtonColumn>
                             </td>
                         </tr>)
@@ -140,6 +159,15 @@ const Students: React.FC = () => {
     return (
         <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading}/>
+            <ConfirmationModal 
+                title='Excluir aluno'
+                subtitle={`Deseja confirmar a exclusão de ${selected?.name}?`}
+                show={showDeleteModal}
+                onCancel={deleteStudentCancel}
+                onClose={deleteStudentCancel}
+                onConfirm={deleteStudentConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <StudentForm 
                 show={showForm} 
                 student={selected} 

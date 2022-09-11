@@ -21,6 +21,7 @@ import AssignmentForm from './AssignmentForm';
 import userType from '../../../services/apiTypes/User';
 import userAssignmentType from '../../../services/apiTypes/UserAssignment';
 import PaginatorDefault from '../../../components/PaginatorDefault';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 
 const Assignments: React.FC = () => {
 
@@ -42,6 +43,7 @@ const Assignments: React.FC = () => {
     const[selectedSubject,setSelectedSubject] = useState<packModuleSubjectType | undefined>()
     const[showForm,setShowForm] = useState(false)
     const[selected,setSelected] = useState<userAssignmentType | undefined>()
+    const[showDeleteModal,setShowDeleteModal] = useState(false)
 
     useEffect(() => {
         if(teacher_id)
@@ -125,6 +127,23 @@ const Assignments: React.FC = () => {
         setAssignments(current => current.map(assignment => assignment.id === nAssignment.id? nAssignment : assignment))
     }
 
+    function deleteAssignment(assignment: userAssignmentType) {
+        setSelected(assignment)
+        setShowDeleteModal(true)
+    }
+
+    function deleteAssignmentConfirm() {
+        setShowDeleteModal(false)
+        api.delete(`/users/${teacher_id}/assignments/${selected?.id}`)
+        .then(() => setAssignments(current => current.filter(assignment => assignment.id!==selected?.id)))
+        .catch( error => addErrorMessage(extractError(error)))
+    }
+
+    function deleteAssignmentCancel() {
+        setShowDeleteModal(false)
+        setSelected(undefined)
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -148,7 +167,7 @@ const Assignments: React.FC = () => {
                         <td>
                             <ButtonColumn>
                                 <button className='secondary' onClick={() => editAssignment(assignment)}><FaEdit /></button>
-                                <button className='secondary'><FaTrash /></button>
+                                <button className='secondary' onClick={() => deleteAssignment(assignment)}><FaTrash /></button>
                             </ButtonColumn>
                         </td>
                     </tr>
@@ -162,6 +181,15 @@ const Assignments: React.FC = () => {
     return (
         <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading}/>
+            <ConfirmationModal
+                title='Excluir vículo'
+                subtitle={`Deseja confirmar a exclusão de vínculo?`}
+                show={showDeleteModal}
+                onCancel={deleteAssignmentCancel}
+                onClose={deleteAssignmentCancel}
+                onConfirm={deleteAssignmentConfirm}> 
+                A exclusão não será possível caso haja resgistros vinculados a este.
+            </ConfirmationModal>
             <ClassFrame 
                 show={showClassFrame} 
                 handleClose={closeFrame} 
