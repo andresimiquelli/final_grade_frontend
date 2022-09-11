@@ -17,12 +17,13 @@ import EvaluationForm from './EvaluationForm';
 import PaginatorDefault from '../../../components/PaginatorDefault';
 import { UserType } from '../../../services/apiTypes/User';
 import JournalService, { statusPermissions } from '../../../services/JournalService';
+import { extractError } from '../../../utils/errorHandler';
 
 const Evaluations: React.FC = () => {
 
     const { token, currentUser } = useAuth()
     const api = useApi(token)
-    const { setContentTitle, setSelectedMenu } = useNav()
+    const { setContentTitle, setSelectedMenu, addErrorMessage } = useNav()
     const { class_id, subject_id} = useParams()
 
     const[evaluations,setEvaluations] = useState<evaluationType[]>([])
@@ -70,6 +71,7 @@ const Evaluations: React.FC = () => {
             }
         )
         .finally(() => setIsLoading(false))
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function edit(evaluation: evaluationType) {

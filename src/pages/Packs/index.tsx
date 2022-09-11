@@ -16,12 +16,13 @@ import CourseFrame from '../../frames/CourseFrame';
 import { IoExtensionPuzzleSharp } from 'react-icons/io5';
 import ButtonColumn from '../../components/ButtonColumn';
 import PaginatorDefault from '../../components/PaginatorDefault';
+import { extractError } from '../../utils/errorHandler';
 
 const Packs: React.FC = () => {
 
     const { token } = useAuth()
     const api = useApi(token)
-    const { setContentTitle, setSelectedMenu } = useNav()
+    const { setContentTitle, setSelectedMenu, addErrorMessage } = useNav()
     const navigate = useNavigate()
 
     const[packs,setPacks] = useState([] as packType[])
@@ -67,6 +68,7 @@ const Packs: React.FC = () => {
         .finally(
             () => setIsLoading(false)
         )
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function editPack(pack: packType) {

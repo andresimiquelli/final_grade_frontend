@@ -13,10 +13,11 @@ import StudentForm from './StudentForm';
 import LoadingContainer from '../../components/LodingContainer';
 import ButtonColumn from '../../components/ButtonColumn';
 import PaginatorDefault from '../../components/PaginatorDefault';
+import { extractError } from '../../utils/errorHandler';
 
 const Students: React.FC = () => {
 
-    const { setSelectedMenu } = useNav()
+    const { setSelectedMenu, addErrorMessage } = useNav()
     const { token } = useAuth()
     const api = useApi(token)
     const navigate = useNavigate()
@@ -71,6 +72,7 @@ const Students: React.FC = () => {
         .finally(
             () => setIsLoading(false)
         )
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function editStudent(student: studentType) {

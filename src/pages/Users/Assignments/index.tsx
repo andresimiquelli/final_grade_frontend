@@ -20,13 +20,14 @@ import PackSubjectFrame from '../../../frames/PackSubjectFrame';
 import AssignmentForm from './AssignmentForm';
 import userType from '../../../services/apiTypes/User';
 import userAssignmentType from '../../../services/apiTypes/UserAssignment';
+import PaginatorDefault from '../../../components/PaginatorDefault';
 
 const Assignments: React.FC = () => {
 
     const { teacher_id } = useParams()
     const { token } = useAuth()
     const api = useApi(token)
-    const { setContentTitle, setSelectedMenu } = useNav()
+    const { setContentTitle, setSelectedMenu, addErrorMessage } = useNav()
 
     const[teacher,setTeacher] = useState<userType>({} as userType)
     const[assignments,setAssignments] = useState<userAssignmentType[]>([])
@@ -34,8 +35,6 @@ const Assignments: React.FC = () => {
     const[currentPage,setCurrentPage] = useState(1)
 
     const[isLoading,setIsLoading] = useState(false)
-    const[hasError,setHasError] = useState(false)
-    const[error,setError] = useState<errorType | undefined>()
 
     const[showClassFrame,setShowClassFrame] = useState(false)
     const[selectedClass,setSelectedClass] = useState<classType | undefined>()
@@ -64,16 +63,15 @@ const Assignments: React.FC = () => {
         )
         .catch(
             error => {
-                setHasError(true)
-                setError(extractError(error))
+                addErrorMessage(extractError(error))
                 setIsLoading(false)
             }
         )
     }
 
-    function loadAssignments() {
+    function loadAssignments(page: number = 1) {
         setIsLoading(true)
-        api.get(`/users/${teacher_id}/assignments`)
+        api.get(`/users/${teacher_id}/assignments?page=${page}`)
         .then(
             response => {
                 setAssignments(response.data.data)
@@ -84,12 +82,7 @@ const Assignments: React.FC = () => {
         .finally(
             () => setIsLoading(false)
         )
-        .catch(
-            error => {
-                setHasError(true)
-                setError(extractError(error))
-            }
-        )
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function selectClass(cclass: classType) {
@@ -189,6 +182,9 @@ const Assignments: React.FC = () => {
                 assignment={selected}/>
             <ContentToolBar>
                 <div></div>
+                <div>
+                    <PaginatorDefault currentPage={currentPage} totalPages={totalPages} onChange={loadAssignments} />
+                </div>
                 <div>
                     <Button onClick={() => setShowClassFrame(true)}><HiPlus /></Button>
                 </div>

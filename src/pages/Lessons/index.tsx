@@ -17,6 +17,7 @@ import AttendanceForm from './AttendanceForm';
 import { UserType } from '../../services/apiTypes/User';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import JournalService, { statusPermissions } from '../../services/JournalService';
+import { extractError } from '../../utils/errorHandler';
 
 const Lessons: React.FC = () => {
 
@@ -24,7 +25,7 @@ const Lessons: React.FC = () => {
 
     const { token, currentUser } = useAuth()
     const api = useApi(token)
-    const { setContentTitle, setSelectedMenu } = useNav()
+    const { setContentTitle, setSelectedMenu, addErrorMessage } = useNav()
 
     const[lessons,setLessons] = useState<lessonType[]>([])
     const[totalPages,setTotalPages] = useState(1)
@@ -59,6 +60,7 @@ const Lessons: React.FC = () => {
             }
         )
         .finally(() => setIsLoading(false))
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function closeForm() {

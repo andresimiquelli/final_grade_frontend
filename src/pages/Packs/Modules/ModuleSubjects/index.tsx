@@ -17,10 +17,11 @@ import SubjectFrame from '../../../../frames/SubjectFrame';
 import subjectType from '../../../../services/apiTypes/Subject';
 import ModuleSubjectForm from './ModuleSubjectForm';
 import PaginatorDefault from '../../../../components/PaginatorDefault';
+import { extractError } from '../../../../utils/errorHandler';
 
 const ModuleSubjects: React.FC = () => {
 
-    const { setContentTitle, setSelectedMenu } = useNav()
+    const { setContentTitle, setSelectedMenu, addErrorMessage } = useNav()
     const { pack_id, module_id } = useParams()
     const { token } = useAuth()
     const api = useApi(token)
@@ -52,8 +53,9 @@ const ModuleSubjects: React.FC = () => {
             }
         )
         .catch(
-            () => {
+            error => {
                 setIsLoading(false)
+                addErrorMessage(extractError(error))
             }
         )
     }
@@ -75,6 +77,7 @@ const ModuleSubjects: React.FC = () => {
         .finally(
             () => setIsLoading(false)
         )
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function selectSubject(subject: subjectType) {

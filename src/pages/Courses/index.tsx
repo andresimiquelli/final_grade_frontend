@@ -13,12 +13,13 @@ import CourseForm from './CourseForm';
 import { courseLevelRederer } from '../../utils/courseLevelRenderer';
 import ButtonColumn from '../../components/ButtonColumn';
 import PaginatorDefault from '../../components/PaginatorDefault';
+import { extractError, getMessage } from '../../utils/errorHandler';
 
 const Courses: React.FC = () => {
 
     const { token } = useAuth()
     const api = useApi(token)
-    const { setContentTitle, setSelectedMenu } = useNav()
+    const { setContentTitle, setSelectedMenu, addErrorMessage } = useNav()
 
     const[courses,setCourses] = useState([] as courseType[])
     const[currentPage,setCurrentPage] = useState(1)
@@ -61,6 +62,7 @@ const Courses: React.FC = () => {
         .finally(
             () => setIsLoading(false)
         )
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function editCourse(course: courseType) {

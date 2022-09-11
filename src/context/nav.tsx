@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState } from "react";
 import ContextMessager, {MessageType} from "../components/ContextMessager";
+import errorType from "../services/apiTypes/Error";
+import { getMessage } from "../utils/errorHandler";
 
 interface NavContextProps {
     selectedMenu: string;
     setSelectedMenu(value: string): void;
     contentTitle: string;
     setContentTitle(value: string): void;
-    addErrorMessage(content: string, title?: string): void;
+    addErrorMessage(error: errorType): void;
     addSuccesMessage(content: string, title?: string): void;
 }
 
@@ -26,8 +28,8 @@ const NavContextProvider: React.FC<NavContextProviderProps> = ({ children }) => 
         setMessages(current => current.filter((_,i) => i!==index))
     }
 
-    function addErrorMessage(content: string, title?: string) {
-        setMessages([...messages, {title, content, variant: 'danger'} as MessageType])
+    function addErrorMessage(error: errorType) {        
+        setMessages([...messages, {title: 'Ops! :(', content: getMessage(error.type), variant: 'danger'} as MessageType])
     }
 
     function addSuccesMessage(content: string, title?: string) {

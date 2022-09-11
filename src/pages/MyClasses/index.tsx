@@ -15,12 +15,13 @@ import { GoTasklist } from 'react-icons/go';
 import PaginatorDefault from '../../components/PaginatorDefault';
 import ContentToolBar from '../../components/ContentToolBar';
 import { UserType } from '../../services/apiTypes/User';
+import { extractError } from '../../utils/errorHandler';
 
 const MyClasses: React.FC = () => {
 
     const { token, currentUser } = useAuth()
     const api = useApi(token)
-    const { setSelectedMenu, setContentTitle } = useNav()
+    const { setSelectedMenu, setContentTitle, addErrorMessage } = useNav()
     const navigate = useNavigate()
 
     const[isLoading,setIsLoading] = useState(false)
@@ -45,6 +46,7 @@ const MyClasses: React.FC = () => {
             }
         )
         .finally(() => setIsLoading(false))
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     return (

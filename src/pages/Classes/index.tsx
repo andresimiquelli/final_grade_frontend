@@ -17,11 +17,12 @@ import PackFrame from '../../frames/PackFrame';
 import packType from '../../services/apiTypes/Pack';
 import ClassForm from './ClassForm';
 import PaginatorDefault from '../../components/PaginatorDefault';
+import { extractError } from '../../utils/errorHandler';
 
 const Classes: React.FC = () => {
 
     const navigate = useNavigate()
-    const {setContentTitle, setSelectedMenu} = useNav()
+    const {setContentTitle, setSelectedMenu, addErrorMessage} = useNav()
     const { token } = useAuth()
     const api = useApi(token)
 
@@ -69,6 +70,7 @@ const Classes: React.FC = () => {
         .finally(
             () => setIsLoading(false)
         )
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function showTable() { 

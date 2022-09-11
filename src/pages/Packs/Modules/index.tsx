@@ -15,13 +15,14 @@ import { HiPlus } from 'react-icons/hi';
 import packType from '../../../services/apiTypes/Pack';
 import ModuleForm from './ModuleForm';
 import PaginatorDefault from '../../../components/PaginatorDefault';
+import { extractError } from '../../../utils/errorHandler';
 
 const Modules: React.FC = () => {
 
     const { pack_id } = useParams()
     const { token } = useAuth()
     const api = useApi(token)
-    const { setContentTitle, setSelectedMenu } = useNav()
+    const { setContentTitle, setSelectedMenu, addErrorMessage } = useNav()
     const navigate = useNavigate()
 
     const[modules,setModules] = useState([] as packModuleType[])
@@ -51,7 +52,7 @@ const Modules: React.FC = () => {
         .catch(
             error => {
                 setIsLoading(false)
-                console.log(error)
+                addErrorMessage(extractError(error))
             }
         )
     }
@@ -73,6 +74,7 @@ const Modules: React.FC = () => {
         .finally(
             () => setIsLoading(false)
         )
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function handleSave(module: packModuleType) {

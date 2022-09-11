@@ -15,10 +15,11 @@ import UserForm from './UserForm';
 import { TagType } from './styles'
 import ButtonColumn from '../../components/ButtonColumn';
 import PaginatorDefault from '../../components/PaginatorDefault';
+import { extractError } from '../../utils/errorHandler';
 
 const Users: React.FC = () => {
 
-    const { setSelectedMenu, setContentTitle } = useNav()
+    const { setSelectedMenu, setContentTitle, addErrorMessage } = useNav()
     const { token } = useAuth()
     const api = useApi(token)
     const navigate = useNavigate()
@@ -74,6 +75,7 @@ const Users: React.FC = () => {
         .finally(
             () => setIsLoading(false)
         )
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function editUser(user: userType) {

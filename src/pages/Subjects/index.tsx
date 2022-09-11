@@ -14,12 +14,13 @@ import { SubjectDescription } from './styles'
 import SubjectForm from './SubjctForm';
 import ButtonColumn from '../../components/ButtonColumn';
 import PaginatorDefault from '../../components/PaginatorDefault';
+import { extractError } from '../../utils/errorHandler';
 
 const Subjects: React.FC = () => {
 
     const { token } = useAuth()
     const api = useApi(token)
-    const { setContentTitle, setSelectedMenu } = useNav()
+    const { setContentTitle, setSelectedMenu, addErrorMessage } = useNav()
 
     const[subjects,setSubjects] = useState([] as subjectType[])
     const[totalPages,setTotalPages] = useState(1)
@@ -63,6 +64,7 @@ const Subjects: React.FC = () => {
         .finally(
             () => setIsLoading(false)
         )
+        .catch( error => addErrorMessage(extractError(error)))
     }
 
     function editSubject(subject: subjectType) {

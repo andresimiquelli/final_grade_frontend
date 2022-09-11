@@ -17,13 +17,15 @@ import ClassFrame from '../../../frames/ClassFrame';
 import classType from '../../../services/apiTypes/Class';
 import EnrollmentForm from './EnrollmentForm';
 import studentType from '../../../services/apiTypes/Student';
+import { extractError } from '../../../utils/errorHandler';
+import PaginatorDefault from '../../../components/PaginatorDefault';
 
 const Enrollments: React.FC = () => {
 
     const { student_id } = useParams()
     const { token } = useAuth()
     const api = useApi(token)
-    const { setContentTitle, setSelectedMenu } = useNav()
+    const { setContentTitle, setSelectedMenu, addErrorMessage } = useNav()
 
     const[student,setStudent] = useState<studentType | undefined>()
     const[enrollments,setEnrollments] = useState<enrollmentType[]>([])
@@ -51,13 +53,16 @@ const Enrollments: React.FC = () => {
             }
         )
         .catch(
-            () => setIsLoading(false)
+            error => {
+                setIsLoading(false)
+                addErrorMessage(extractError(error))
+            }
         )
     }
 
-    function loadEnrollments() {
+    function loadEnrollments(page: number = 1) {
         setIsLoading(true)
-        api.get(`/enrollments?filters=student_id:${student_id}&with=cclass`)
+        api.get(`/enrollments?filters=student_id:${student_id}&with=cclass&page=${page}`)
         .then(
             response => {
                 setEnrollments(response.data.data)
@@ -65,7 +70,7 @@ const Enrollments: React.FC = () => {
                 setCurrentPage(response.data.current_page)
             }
         )
-        .catch()
+        .catch( error => addErrorMessage(extractError(error)))
         .finally(
             () => setIsLoading(false)
         )
@@ -161,6 +166,9 @@ const Enrollments: React.FC = () => {
                 cclass={selectedClass} />
             <ContentToolBar>
                 <div></div>
+                <div>
+                    <PaginatorDefault totalPages={totalPages} currentPage={currentPage} onChange={loadEnrollments}/>
+                </div>
                 <div>
                     <Button onClick={newEnrollment}><HiPlus /></Button>
                 </div>
