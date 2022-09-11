@@ -25,7 +25,7 @@ class JournalService {
         try {
             const response = await this.api.get(`/journals/${class_id}/${subject_id}`);
             const journal = response.data as journalType
-            return journal.status? journal.status : statusPermissions.ERROR
+            return journal.status? journal.status : statusPermissions.OPEN
         } catch(exeception) {
             const error = exeception as AxiosError
             if(error.request.status)

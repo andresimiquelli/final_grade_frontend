@@ -8,12 +8,19 @@ import { useApi } from '../../../services/api';
 import journalType, { JournalStatus } from '../../../services/apiTypes/Journal';
 import DefaultTable from '../../../components/DefaultTable';
 import ButtonColumn from '../../../components/ButtonColumn';
-import { FaChalkboardTeacher } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaUnlock } from 'react-icons/fa';
 import { TbChecklist } from 'react-icons/tb';
 import LoadingContainer from '../../../components/LodingContainer';
 import PaginatorDefault from '../../../components/PaginatorDefault';
 import { GoTasklist } from 'react-icons/go';
 import { RiCheckboxBlankCircleLine, RiCheckboxCircleFill } from 'react-icons/ri';
+import ConfirmationModal from '../../../components/ConfirmationModal';
+
+type journalData = {
+    class_id: number | undefined;
+    pack_module_subject_id: number;
+    status: number;
+}
 
 const Journals: React.FC = () => {
 
@@ -28,13 +35,15 @@ const Journals: React.FC = () => {
     const[currentPage,setCurrentPage] = useState(1)
 
     const[isLoading,setIsLoading] = useState(false)
+    const[showConfirmationModal,setShowConfirmationModal] = useState(false)
+    const[selectedJournal,setSelectedJournal] = useState<journalType>()
 
     useEffect(() => {
         setContentTitle("Diários de classe")
         setSelectedMenu(MenuKeys.CLASSES)
         if(class_id)
             loadJournals()
-    },[ class_id ])
+    },[class_id])
 
     function getFilters(page: number) {
         return '?page='+page
@@ -52,6 +61,39 @@ const Journals: React.FC = () => {
             }
         )
         .finally(() => setIsLoading(false))
+    }
+
+    function reopenJournal(journal: journalType) {
+        setSelectedJournal(journal)
+        setShowConfirmationModal(true)
+    }
+
+    function reopenJournalCancel() {
+        setSelectedJournal(undefined)
+        setShowConfirmationModal(false)
+    }
+
+    function reopenJournalConfirm() {
+        setShowConfirmationModal(false)
+        setIsLoading(true)
+        const data = {
+            class_id: class_id,
+            pack_module_subject_id: selectedJournal?.pack_module_subject_id,
+            status: JournalStatus.OPEN
+        } as journalData
+
+        api.post(`/journals`, data)
+        .then(() => {
+            setJournals(current => current.map(
+                journal => {
+                    if(journal.pack_module_subject_id===(selectedJournal? selectedJournal.pack_module_subject_id:0))
+                        journal.status = JournalStatus.OPEN
+
+                    return journal
+                }))
+        })
+        .finally(() => setIsLoading(false))
+
     }
 
     function showTable() {
@@ -77,6 +119,15 @@ const Journals: React.FC = () => {
                             </td>
                             <td>
                                 <ButtonColumn>
+                                    {
+                                        journal.status===JournalStatus.CLOSED&&
+                                        <button 
+                                            onClick={() => reopenJournal(journal)}
+                                            className='success'>
+                                            <FaUnlock />
+                                            <span>Reabrir</span>
+                                        </button>
+                                    }                                    
                                     <button onClick={() => navigate(`/lessons/${class_id}/${journal.pack_module_subject_id}`)}>
                                         <FaChalkboardTeacher />
                                         <span>Aulas</span>
@@ -102,6 +153,16 @@ const Journals: React.FC = () => {
     return (
         <Container className='position-relative' fluid>
             <LoadingContainer show={isLoading} />
+            <ConfirmationModal
+                title='Reabrir diário'
+                subtitle='Deseja reabrir este diário?'
+                show={showConfirmationModal}
+                onClose={reopenJournalCancel}
+                onCancel={reopenJournalCancel}
+                onConfirm={reopenJournalConfirm}
+             >
+                Ao reabrir o diário, as informações de aula, avaliações, notas e frequências poderão ser alteradas.
+             </ConfirmationModal>
             <ContentToolBar>
                 <div></div>
                 <PaginatorDefault

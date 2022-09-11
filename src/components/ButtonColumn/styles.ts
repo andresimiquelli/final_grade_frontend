@@ -49,6 +49,10 @@ export const Container = styled.div`
         color: ${props => props.theme.colors.gray_80};
     }
 
+    > button.success {
+        color: ${props => props.theme.colors.success_primary}
+    }
+
     > button:hover {
         background-color: ${props => props.theme.colors.white};
     }
