@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import LoadingContainer from '../../components/LodingContainer';
@@ -12,11 +12,18 @@ import logo from '../../assets/logo_moria.png';
 const Login: React.FC = () => {
 
     const api = useApi()
-    const { setAuth, updateUser } = useAuth()
+    const { setAuth, updateUser, currentUser } = useAuth()
 
     const[email,setEmail] = useState('')
     const[password,setPassword] = useState('')
     const[isLoading,setIsloading] = useState(false)
+
+    const inputEmail = useRef<HTMLInputElement>(null)
+
+    useEffect(() => {
+        if(currentUser)
+            setEmail(currentUser.email)
+    },[])
 
     function login(e: React.FormEvent) {
         e.preventDefault()
@@ -62,6 +69,7 @@ const Login: React.FC = () => {
                 <Form className='p-4' onSubmit={login}>
                     <Form.Group className='mb-2'>
                         <Form.Control
+                            ref={inputEmail}
                             type='email'
                             required 
                             placeholder='E-mail'

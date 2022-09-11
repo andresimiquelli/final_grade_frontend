@@ -66,7 +66,6 @@ const AuthProvider: React.FC<AuthContextProviderProps> = ({ children }) => {
             setTokenUpdatedAt(0)
             setCurrentUser(undefined)
             localStorage.removeItem(storagePrefix+'token')
-            localStorage.removeItem(storagePrefix+'user')
         }        
     }
 
