@@ -16,6 +16,7 @@ import GradeForm from './GradeForm';
 import EvaluationForm from './EvaluationForm';
 import PaginatorDefault from '../../../components/PaginatorDefault';
 import { UserType } from '../../../services/apiTypes/User';
+import JournalService, { statusPermissions } from '../../../services/JournalService';
 
 const Evaluations: React.FC = () => {
 
@@ -34,10 +35,15 @@ const Evaluations: React.FC = () => {
     const[showGradeForm,setShowGradeForm] = useState(false)
     const[showEvaluationForm,setShowEvaluationForm] = useState(false)
 
+    const[isEditable,setIsEditable] = useState<number>(statusPermissions.LOADING)
+
     useEffect(() => {
         setContentTitle("Avaliações")
         setSelectedMenu(MenuKeys.CLASSES)
         loadEvaluations()
+        JournalService.getStatus(class_id,subject_id,token)
+            .then(status => setIsEditable(status))
+            .catch(() => setIsEditable(statusPermissions.ERROR))
     },[])
 
     function getFilters(page: number = 1) {
@@ -93,12 +99,18 @@ const Evaluations: React.FC = () => {
                                         <MdChecklist/>
                                         <span>Pontuação</span>
                                     </button>
-                                    <button 
-                                        className='secondary'
-                                        onClick={() => edit(evaluation)}>
-                                            <FaEdit />
-                                    </button>
-                                    <button className='secondary'><FaTrash /></button>
+                            {
+                                isEditable===statusPermissions.OPEN&&
+                                    <>
+                                        <button 
+                                            className='secondary'
+                                            onClick={() => edit(evaluation)}>
+                                                <FaEdit />
+                                        </button>
+                                        <button className='secondary'><FaTrash /></button>
+                                    </>
+                            }
+                                    
                                 </ButtonColumn>
                             </td>
                         </tr>
@@ -150,6 +162,7 @@ const Evaluations: React.FC = () => {
                 evaluation={selected}/>
             <GradeForm 
                 show={showGradeForm}
+                notEditable={isEditable!==statusPermissions.OPEN}
                 classId={class_id}
                 subjectId={subject_id}
                 evaluation={selected}
@@ -177,7 +190,11 @@ const Evaluations: React.FC = () => {
                     totalPages={totalPages}
                     onChange={(page) => loadEvaluations(page)} />
                 <div>
-                    <Button onClick={() => setShowEvaluationForm(true)}><HiPlus /> Nova avaliação</Button>
+                    <Button 
+                        disabled={isEditable!==statusPermissions.OPEN}
+                        onClick={() => setShowEvaluationForm(true)}>
+                            <HiPlus /> Nova avaliação
+                    </Button>
                 </div>
             </ContentToolBar>
             <Row>

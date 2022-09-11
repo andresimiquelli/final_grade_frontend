@@ -16,6 +16,7 @@ import LessonForm from './LessonForm';
 import AttendanceForm from './AttendanceForm';
 import { UserType } from '../../services/apiTypes/User';
 import PaginatorDefault from '../../components/PaginatorDefault';
+import JournalService, { statusPermissions } from '../../services/JournalService';
 
 const Lessons: React.FC = () => {
 
@@ -34,11 +35,16 @@ const Lessons: React.FC = () => {
     const[selected,setSelected] = useState<lessonType | undefined>()
     const[showAttendanceForm, setShowAttendanceForm] = useState(false)
 
+    const[isEditable,setIsEditable] = useState<number>(statusPermissions.LOADING)
+
     useEffect(() => {
         setContentTitle("Aulas")
         setSelectedMenu(MenuKeys.CLASSES)
         if(class_id && subject_id) {
             loadLessons()
+            JournalService.getStatus(class_id,subject_id,token)
+                .then(status => setIsEditable(status))
+                .catch(() => setIsEditable(statusPermissions.ERROR))
         }
     },[])
 
@@ -106,14 +112,20 @@ const Lessons: React.FC = () => {
                                         <FaUserCheck />
                                         <span>Chamada</span>
                                     </button>
-                                    <button 
-                                        onClick={() => editLesson(lesson)}
-                                        className='secondary'>
-                                        <FaEdit />
-                                    </button>
-                                    <button className='secondary'>
-                                        <FaTrash />
-                                    </button>
+                                    {
+                                        isEditable===statusPermissions.OPEN&&
+                                        <>
+                                            <button
+                                                onClick={() => editLesson(lesson)}
+                                                className='secondary'>
+                                                <FaEdit />
+                                            </button>
+                                            <button className='secondary'>
+                                                <FaTrash />
+                                            </button>
+                                        </>
+                                    }
+                                    
                                 </ButtonColumn>
                             </td>
                         </tr>
@@ -137,6 +149,7 @@ const Lessons: React.FC = () => {
                 classId={class_id}
                 subjectId={subject_id}/>
             <AttendanceForm 
+                notEditable={isEditable!==statusPermissions.OPEN}
                 show={showAttendanceForm}
                 classId={class_id}
                 handleClose={closeAttendanceForm}
@@ -151,6 +164,7 @@ const Lessons: React.FC = () => {
                 </div>
                 <div>
                     <Button
+                        disabled={isEditable!==statusPermissions.OPEN}
                         onClick={() => setShowForm(true)}>
                         <HiPlus /> Nova aula
                     </Button>

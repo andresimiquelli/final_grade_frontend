@@ -3,7 +3,6 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import enrollmentType from '../../../../services/apiTypes/Enrollment';
 import { useAuth } from '../../../../context/auth';
 import { useApi } from '../../../../services/api';
-import evaluationGradeType from '../../../../services/apiTypes/EvaluationGrade';
 import evaluationType from '../../../../services/apiTypes/Evaluation';
 import DefaultTable from '../../../../components/DefaultTable';
 import LoadingContainer from '../../../../components/LodingContainer';
@@ -13,6 +12,7 @@ interface GradeFormProps {
     classId?: string;
     subjectId?: string;
     evaluation?: evaluationType;
+    notEditable?: boolean;
     handleClose(): void;
 }
 
@@ -25,7 +25,7 @@ type postGradeData = {
     grades: gradeData[];
 }
 
-const GradeForm: React.FC<GradeFormProps> = ({ show, classId, subjectId, evaluation, handleClose }) => {
+const GradeForm: React.FC<GradeFormProps> = ({ show, classId, subjectId, evaluation, notEditable, handleClose }) => {
 
     const { token } = useAuth()
     const api = useApi(token)
@@ -139,6 +139,7 @@ const GradeForm: React.FC<GradeFormProps> = ({ show, classId, subjectId, evaluat
                             <td>{enrollment.student?.name}</td>
                             <td>
                                 <Form.Control 
+                                    disabled={notEditable}
                                     type='number' 
                                     value={getGradeValue(enrollment.id)}
                                     onChange={(e) => changeGradeValue(enrollment.id, parseInt(e.target.value))} />
@@ -165,9 +166,11 @@ const GradeForm: React.FC<GradeFormProps> = ({ show, classId, subjectId, evaluat
                     <Button
                         onClick={handleClose}
                         variant="secondary">
-                        Cancelar
+                        {notEditable? 'Fechar' : 'Cancelar'}
                     </Button>
-                    <Button type="submit">
+                    <Button 
+                        disabled={notEditable}
+                        type="submit">
                         Salvar
                     </Button>
                 </Modal.Footer>

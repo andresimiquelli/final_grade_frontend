@@ -13,6 +13,7 @@ interface AttendanceFormProps {
     classId?: number | string;
     lesson?: lessonType;
     show?: boolean;
+    notEditable?: boolean;
     handleClose?(): void;
     handleSave?(): void;
 }
@@ -97,6 +98,7 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ classId, show, lesson, 
                             <td>{enrollment.student?.name}</td>
                             <td>
                                 <Form.Check
+                                    disabled={props.notEditable}
                                     type="switch"
                                     checked={vefAttendance(enrollment.id)}
                                     onChange={(e) => checkAttendance(enrollment, e.target.checked)}/>
@@ -142,9 +144,12 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ classId, show, lesson, 
                     <Button 
                         variant='secondary'
                         onClick={props.handleClose}>
-                        Cancelar
+                        {props.notEditable? 'Fechar' : 'Cancelar'}
                     </Button>
-                    <Button type='submit'>Salvar</Button>
+                    <Button 
+                        disabled={props.notEditable}
+                        type='submit'
+                        >Salvar</Button>
                 </Modal.Footer>
             </Form>
         </Modal>
