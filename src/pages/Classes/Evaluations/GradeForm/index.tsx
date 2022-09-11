@@ -6,6 +6,9 @@ import { useApi } from '../../../../services/api';
 import evaluationType from '../../../../services/apiTypes/Evaluation';
 import DefaultTable from '../../../../components/DefaultTable';
 import LoadingContainer from '../../../../components/LodingContainer';
+import errorType from '../../../../services/apiTypes/Error';
+import ErrorScreen from '../../../../components/ErrorScreen';
+import { extractError } from '../../../../utils/errorHandler';
 
 interface GradeFormProps {
     show?: boolean;
@@ -38,6 +41,9 @@ const GradeForm: React.FC<GradeFormProps> = ({ show, classId, subjectId, evaluat
     
     const isLoading = useMemo(() => loadingEnrollments || loadingGrades , [loadingEnrollments, loadingGrades])
 
+    const[hasError,setHasError] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
+
     useEffect(() => {
         if(classId && subjectId)
             loadEnrollments()
@@ -54,6 +60,11 @@ const GradeForm: React.FC<GradeFormProps> = ({ show, classId, subjectId, evaluat
             setGrades([])
     },[show])
 
+    function close() {
+        setHasError(false)
+        handleClose&& handleClose()
+    }
+
     function loadEnrollments() {
         setLoadingEnrollments(true)
         api.get(`/enrollments?with=student&filters=class_id:${classId}&paginate=disable`)
@@ -63,6 +74,12 @@ const GradeForm: React.FC<GradeFormProps> = ({ show, classId, subjectId, evaluat
             }
         )
         .finally(() => setLoadingEnrollments(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function loadGrades() {
@@ -83,6 +100,12 @@ const GradeForm: React.FC<GradeFormProps> = ({ show, classId, subjectId, evaluat
             }
         )
         .finally(() => setLoadingGrades(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function getGradeValue(id: number) {
@@ -116,11 +139,16 @@ const GradeForm: React.FC<GradeFormProps> = ({ show, classId, subjectId, evaluat
         api.post(`/evaluations/${evaluation?.id}/grades`, data)
         .then(
             response => {
-                console.log(response)
-                handleClose()
+                close()
             }
         )
         .finally(() => setLoadingGrades(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function showTable() {
@@ -153,18 +181,19 @@ const GradeForm: React.FC<GradeFormProps> = ({ show, classId, subjectId, evaluat
     }
 
     return (
-        <Modal show={show} onHide={handleClose}>
+        <Modal show={show} onHide={close}>
             <Modal.Header>
                 <Modal.Title>Notas</Modal.Title>
             </Modal.Header>
             <Form onSubmit={save}>
                 <Modal.Body>
                     <LoadingContainer show={isLoading}/>
+                    <ErrorScreen show={hasError} handleClose={() => setHasError(false)} error={error}/> 
                     { showTable() }
                 </Modal.Body>
                 <Modal.Footer>
                     <Button
-                        onClick={handleClose}
+                        onClick={close}
                         variant="secondary">
                         {notEditable? 'Fechar' : 'Cancelar'}
                     </Button>

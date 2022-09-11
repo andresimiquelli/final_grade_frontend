@@ -50,6 +50,11 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ( props ) => {
         }
     },[props.assignment])
 
+    function close() {
+        setHasError(false)
+        props.handleClose&& props.handleClose()
+    }
+
     function save(e: React.FormEvent) {
         e.preventDefault()
         setIsLoading(true)
@@ -80,7 +85,7 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ( props ) => {
         .then(
             response => {
                 props.handleSave&& props.handleSave(response.data)
-                props.handleClose&& props.handleClose()
+                close()
             }
         )
         .finally( () => setIsLoading(false) )
@@ -98,7 +103,7 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ( props ) => {
         .then(
             response => {
                 props.handleUpdate&& props.handleUpdate(response.data)
-                props.handleClose&& props.handleClose()
+                close()
             }
         )
         .finally( () => setIsLoading(false) )
@@ -111,7 +116,7 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ( props ) => {
     }
 
     return (
-        <Modal show={props.show} onHide={props.handleClose}>
+        <Modal show={props.show} onHide={close}>
             <Modal.Header>
                 <Modal.Title>{props.assignment? 'Editar vínculo' : 'Novo vínculo'}</Modal.Title>
             </Modal.Header>
@@ -147,7 +152,7 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ( props ) => {
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant='secondary' onClick={() => props.handleClose&& props.handleClose()}>Cancelar</Button>
+                    <Button variant='secondary' onClick={close}>Cancelar</Button>
                     <Button type='submit'>Salvar</Button>
                 </Modal.Footer>
             </Form>

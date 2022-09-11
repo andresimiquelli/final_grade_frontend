@@ -110,7 +110,7 @@ const Journals: React.FC = () => {
                 <tbody>
                 {
                     journals.map(journal =>
-                        <tr>
+                        <tr key={journal.pack_module_subject_id}>
                             <td>{journal.subject_name}</td>
                             <td>{journal.pack_module_name}</td>
                             <td>

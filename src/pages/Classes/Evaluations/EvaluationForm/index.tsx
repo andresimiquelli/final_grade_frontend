@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
+import ErrorScreen from '../../../../components/ErrorScreen';
 import LoadingContainer from '../../../../components/LodingContainer';
 import { useAuth } from '../../../../context/auth';
 import { useApi } from '../../../../services/api';
+import errorType from '../../../../services/apiTypes/Error';
 import evaluationType from '../../../../services/apiTypes/Evaluation';
+import { extractError } from '../../../../utils/errorHandler';
 
 interface EvaluationFormProps {
     show?: boolean;
@@ -32,6 +35,8 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ( props ) => {
     const[name,setName] = useState('')
     const[value,setValue] = useState<number>()
     const[isLoading,setIsLoading] = useState(false)
+    const[hasError,setHasError] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
 
     useEffect(() => {
         if(props.evaluation) {
@@ -42,6 +47,11 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ( props ) => {
             setValue(0)
         }
     },[props.evaluation])
+
+    function close() {
+        setHasError(false)
+        props.handleClose&& props.handleClose()
+    }
 
     function save(e: React.FormEvent) {
         e.preventDefault()
@@ -77,11 +87,16 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ( props ) => {
             response => {
                 props.handleSave&&
                     props.handleSave(response.data)
-                props.handleClose&&
-                    props.handleClose()
+                close()
             }
         )
         .finally(() => setIsLoading(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function update() {
@@ -92,20 +107,26 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ( props ) => {
             response => {
                 props.handleUpdate&&
                     props.handleUpdate(response.data)
-                props.handleClose&&
-                    props.handleClose()
+                close()
             }
         )
         .finally(() => setIsLoading(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     return (
-        <Modal show={props.show} onHide={props.handleClose}>
+        <Modal show={props.show} onHide={close}>
             <Modal.Header>
                 <Modal.Title>{props.evaluation? 'Editar avaliação' : 'Nova avaliação'}</Modal.Title>
             </Modal.Header>
             <Form onSubmit={save}>
                 <Modal.Body className='position-relative'>
+                    <ErrorScreen show={hasError} handleClose={() => setHasError(false)} error={error}/>  
                     <LoadingContainer show={isLoading} />
                     <Form.Group className='mb-2'>
                         <Form.Control
@@ -128,7 +149,7 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ( props ) => {
                 <Modal.Footer>
                     <Button
                         variant='secondary'
-                        onClick={props.handleClose}>
+                        onClick={close}>
                         Cancelar
                     </Button>
                     <Button

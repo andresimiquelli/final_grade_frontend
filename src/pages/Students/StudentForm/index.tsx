@@ -4,6 +4,9 @@ import LoadingContainer from '../../../components/LodingContainer';
 import studentType from '../../../services/apiTypes/Student';
 import { useAuth } from '../../../context/auth';
 import { useApi } from '../../../services/api';
+import errorType from '../../../services/apiTypes/Error';
+import ErrorScreen from '../../../components/ErrorScreen';
+import { extractError } from '../../../utils/errorHandler';
 
 interface StudentFormProps {
     show?: boolean;
@@ -22,6 +25,9 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, show, handleClose, h
     const[name,setName] = useState('')
     const[email,setEmail] = useState('')
     const[phone,setPhone] = useState('')
+
+    const[hasError,setHasError] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
 
     useEffect(() => {
         if(student) {
@@ -44,6 +50,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, show, handleClose, h
 
     function close() {
         clear()
+        setHasError(false)
         handleClose()
     }
 
@@ -70,6 +77,12 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, show, handleClose, h
         .finally(
             () => setIsLoading(false)
         )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function update() {
@@ -89,6 +102,12 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, show, handleClose, h
         .finally(
             () => setIsLoading(false)
         )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     return (
@@ -102,7 +121,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, show, handleClose, h
             </Modal.Header>
             <Form onSubmit={save}>
                 <Modal.Body className='position-relative'>
-                    <LoadingContainer show={isLoading}/>                    
+                    <LoadingContainer show={isLoading}/>
+                    <ErrorScreen show={hasError} error={error} handleClose={() => setHasError(false)}/>                    
                         <Form.Group className="mb-2">
                             <Form.Control 
                                 type="text" 

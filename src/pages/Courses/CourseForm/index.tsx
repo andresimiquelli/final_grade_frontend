@@ -4,6 +4,9 @@ import courseType, { CourseLevels } from '../../../services/apiTypes/Course';
 import { useAuth } from '../../../context/auth'
 import { useApi } from '../../../services/api'
 import LoadingContainer from '../../../components/LodingContainer';
+import ErrorScreen from '../../../components/ErrorScreen';
+import errorType from '../../../services/apiTypes/Error';
+import { extractError } from '../../../utils/errorHandler';
 
 interface CourseFormProps {
     show?: boolean;
@@ -28,6 +31,9 @@ const CourseForm: React.FC<CourseFormProps> = ({ show, course, handleSave, handl
 
     const[isLoading,setIsLoading] = useState(false)
 
+    const[hasError,setHasError] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
+
     useEffect(() => {
         if(course) {
             setName(course.name)
@@ -39,6 +45,7 @@ const CourseForm: React.FC<CourseFormProps> = ({ show, course, handleSave, handl
 
     function close() {
         clear()
+        setHasError(false)
         handleClose&& handleClose()
     }
 
@@ -75,6 +82,12 @@ const CourseForm: React.FC<CourseFormProps> = ({ show, course, handleSave, handl
         .finally(
             () => setIsLoading(false)
         )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function update() {
@@ -89,6 +102,12 @@ const CourseForm: React.FC<CourseFormProps> = ({ show, course, handleSave, handl
         .finally(
             () => setIsLoading(false)
         )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     return (
@@ -99,6 +118,7 @@ const CourseForm: React.FC<CourseFormProps> = ({ show, course, handleSave, handl
             <Form onSubmit={save}>
                 <Modal.Body className='position-relative'>
                     <LoadingContainer show={isLoading}/>
+                    <ErrorScreen show={hasError} handleClose={() => setHasError(false)} error={error}/> 
                     <Form.Group className='mb-2'>
                         <Form.Control
                             type="text"

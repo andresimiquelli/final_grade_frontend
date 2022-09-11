@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Alert, Button, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import LoadingContainer from '../../components/LodingContainer';
 import { useApi } from '../../services/api';
 import { useAuth } from '../../context/auth';
+import { extractError, getMessage } from '../../utils/errorHandler';
 
 import { BoxLogin, Container, Logo } from './styles';
 
 import logo from '../../assets/logo_moria.png';
+import errorType from '../../services/apiTypes/Error';
 
 const Login: React.FC = () => {
 
@@ -17,6 +19,7 @@ const Login: React.FC = () => {
     const[email,setEmail] = useState('')
     const[password,setPassword] = useState('')
     const[isLoading,setIsloading] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
 
     const inputEmail = useRef<HTMLInputElement>(null)
 
@@ -40,7 +43,11 @@ const Login: React.FC = () => {
                 loadUser(response.data.access_token)
             }
         )
-        .catch()
+        .catch(
+            response => {
+                setError(extractError(response))
+            }
+        )
         .finally(
             () => setIsloading(false)
         )
@@ -54,9 +61,6 @@ const Login: React.FC = () => {
                 updateUser(response.data)
             }
         )
-        .catch(
-            error => console.log(error)
-        )
     }
 
     return (
@@ -67,6 +71,12 @@ const Login: React.FC = () => {
                    <img src={logo} alt="" /> 
                 </Logo>
                 <Form className='p-4' onSubmit={login}>
+                    {
+                        error&&
+                        <Alert variant='danger' onClose={() => setError(undefined)} dismissible>
+                           {error.status===401? `E-mail ou senha incorreta` : getMessage(error.type)}
+                        </Alert>
+                    }                    
                     <Form.Group className='mb-2'>
                         <Form.Control
                             ref={inputEmail}

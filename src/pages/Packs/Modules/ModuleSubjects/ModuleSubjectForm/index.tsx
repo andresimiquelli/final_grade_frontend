@@ -7,6 +7,9 @@ import { useAuth } from '../../../../../context/auth';
 import { useApi } from '../../../../../services/api';
 
 import { InputBox } from './styles';
+import errorType from '../../../../../services/apiTypes/Error';
+import ErrorScreen from '../../../../../components/ErrorScreen';
+import { extractError } from '../../../../../utils/errorHandler';
 
 type dataType = {
     pack_module_id?: number;
@@ -36,6 +39,9 @@ const ModuleSubjectForm: React.FC<ModuleSubjectFormProps> = ( props ) => {
 
     const[isLoading,setIsLoading] = useState(false)
 
+    const[hasError,setHasError] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
+
     useEffect(() => {
         if(props.moduleSubject) {
             setHours(props.moduleSubject.load > 59? Math.floor(props.moduleSubject.load/60) : 0)
@@ -45,6 +51,11 @@ const ModuleSubjectForm: React.FC<ModuleSubjectFormProps> = ( props ) => {
             setMins(0)
         }
     },[props.moduleSubject])
+
+    function close() {
+        setHasError(false)
+        props.handleClose&& props.handleClose()
+    }
 
     function handleMins(m: number) {
         if(m>59) {
@@ -83,11 +94,17 @@ const ModuleSubjectForm: React.FC<ModuleSubjectFormProps> = ( props ) => {
         .then(
             response => {
                 props.handleSave&& props.handleSave(response.data)
-                props.handleClose&& props.handleClose()
+                close()
             }
         )
         .finally(
             () => setIsLoading(false)
+        )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
         )
     }
 
@@ -97,22 +114,29 @@ const ModuleSubjectForm: React.FC<ModuleSubjectFormProps> = ( props ) => {
         .then(
             response => {
                 props.handleUpdate&& props.handleUpdate(response.data)
-                props.handleClose&& props.handleClose()
+                close()
             }
         )
         .finally(
             () => setIsLoading(false)
         )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     return (
-        <Modal show={props.show} onHide={props.handleClose}>
+        <Modal show={props.show} onHide={close}>
             <Modal.Header>
                 <Modal.Title>{props.moduleSubject? 'Editar carga horária' : 'Adicionar disciplina'}</Modal.Title>
             </Modal.Header>
             <Form onSubmit={save}>
                 <Modal.Body className='position-relative'>
                     <LoadingContainer show={isLoading}/>
+                    <ErrorScreen show={hasError} handleClose={() => setHasError(false)} error={error}/> 
                     <Form.Group>
                         <h6>{props.selectedSubject? props.selectedSubject.name : props.moduleSubject? props.moduleSubject.subject.name : ''}</h6>
                     </Form.Group>
@@ -138,7 +162,7 @@ const ModuleSubjectForm: React.FC<ModuleSubjectFormProps> = ( props ) => {
                 <Modal.Footer>
                     <Button 
                         variant='secondary'
-                        onClick={props.handleClose}>
+                        onClick={close}>
                             Cancelar
                     </Button>
                     <Button type='submit'>Salvar</Button>

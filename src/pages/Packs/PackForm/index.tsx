@@ -5,6 +5,9 @@ import packType from '../../../services/apiTypes/Pack';
 import { useAuth } from '../../../context/auth';
 import { useApi } from '../../../services/api';
 import LoadingContainer from '../../../components/LodingContainer';
+import errorType from '../../../services/apiTypes/Error';
+import ErrorScreen from '../../../components/ErrorScreen';
+import { extractError } from '../../../utils/errorHandler';
 
 interface PackFormProps {
     show?: boolean;
@@ -30,6 +33,9 @@ const PackForm: React.FC<PackFormProps> = ( props ) => {
     const[description,setDescription] = useState('')
     const[isLoading,setIsLoading] = useState(false)
 
+    const[hasError,setHasError] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
+
     useEffect(() => {
         if(props.pack) {
             setName(props.pack.name)
@@ -38,6 +44,12 @@ const PackForm: React.FC<PackFormProps> = ( props ) => {
             clear()
         }
     },[props.pack])
+
+    function close() {
+        clear()
+        setHasError(false)
+        props.handleClose&& props.handleClose()
+    }
 
     function clear() {
         setName('')
@@ -73,10 +85,17 @@ const PackForm: React.FC<PackFormProps> = ( props ) => {
         .then(
             response => {
                 props.handleSave&& props.handleSave(response.data)
+                close()
             }
         )
         .finally(
             () => setIsLoading(false)
+        )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
         )
     }
 
@@ -86,16 +105,23 @@ const PackForm: React.FC<PackFormProps> = ( props ) => {
         .then(
             response => {
                 props.handleUpdate&& props.handleUpdate(response.data)
+                close()
             }
         )
         .finally(
             () => setIsLoading(false)
         )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     return (
         <Modal 
-            onHide={props.handleClose}
+            onHide={close}
             show={props.show}>
             <Modal.Header>
                 <Modal.Title>{ props.pack? 'Editar pacote didático' : 'Novo pacote didático'}</Modal.Title>
@@ -103,6 +129,7 @@ const PackForm: React.FC<PackFormProps> = ( props ) => {
             <Form onSubmit={save}>
                 <Modal.Body className='position-relative'>
                     <LoadingContainer show={isLoading}/>
+                    <ErrorScreen show={hasError} handleClose={() => setHasError(false)} error={error}/> 
                     <Form.Group>
                         <h5>{props.course?.name}</h5>
                     </Form.Group>
@@ -129,7 +156,7 @@ const PackForm: React.FC<PackFormProps> = ( props ) => {
                 <Modal.Footer>
                     <Button 
                         variant='secondary'
-                        onClick={props.handleClose}>
+                        onClick={close}>
                             Cancelar
                     </Button>
                     <Button type='submit'>Salvar</Button>

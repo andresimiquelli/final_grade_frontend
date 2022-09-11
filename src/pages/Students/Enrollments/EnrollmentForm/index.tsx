@@ -8,6 +8,7 @@ import { useApi } from '../../../../services/api';
 import classType from '../../../../services/apiTypes/Class';
 import LoadingContainer from '../../../../components/LodingContainer';
 import ErrorScreen from '../../../../components/ErrorScreen';
+import { extractError } from '../../../../utils/errorHandler';
 
 interface EnrollmentFormProps {
     show?: boolean;
@@ -51,6 +52,11 @@ const EnrollmentForm: React.FC<EnrollmentFormProps> = ( props ) => {
         }
     },[props.enrollment,props.cclass])
 
+    function close() {
+        setHasError(false)
+        props.handleClose&& props.handleClose()
+    }
+
     function getData() {
         let data = {start_at: start} as dataType
 
@@ -92,12 +98,17 @@ const EnrollmentForm: React.FC<EnrollmentFormProps> = ( props ) => {
                 props.handleSave&&
                     props.handleSave(response.data)
 
-                props.handleClose&&
-                    props.handleClose()
+                close()
             }
         )
         .finally(
             () => setIsLoading(false)
+        )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
         )
     }
 
@@ -109,17 +120,22 @@ const EnrollmentForm: React.FC<EnrollmentFormProps> = ( props ) => {
                 props.handleUpdate&&
                     props.handleUpdate(response.data)
 
-                props.handleClose&&
-                    props.handleClose()
+                close()
             }
         )
         .finally(
             () => setIsLoading(false)
         )
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     return (
-        <Modal show={props.show} onHide={props.handleClose}>
+        <Modal show={props.show} onHide={close}>
             <Modal.Header>
                 <Modal.Title>{props.enrollment? "Editar matrícula" : "Nova matrícula"}</Modal.Title>
             </Modal.Header>
@@ -152,7 +168,7 @@ const EnrollmentForm: React.FC<EnrollmentFormProps> = ( props ) => {
                 <Modal.Footer>
                     <Button 
                         variant='secondary' 
-                        onClick={props.handleClose}>
+                        onClick={close}>
                             Cancelar
                         </Button>
                     <Button type='submit'>Salvar</Button>

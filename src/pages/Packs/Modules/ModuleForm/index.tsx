@@ -5,6 +5,9 @@ import { useAuth } from '../../../../context/auth';
 import { useApi }  from '../../../../services/api';
 import packType from '../../../../services/apiTypes/Pack';
 import LoadingContainer from '../../../../components/LodingContainer';
+import errorType from '../../../../services/apiTypes/Error';
+import ErrorScreen from '../../../../components/ErrorScreen';
+import { extractError } from '../../../../utils/errorHandler';
 
 interface ModuleFormProps {
     show?: boolean;
@@ -28,6 +31,9 @@ const ModuleForm: React.FC<ModuleFormProps> = ( props ) => {
     const[name,setName] = useState('')
     const[description,setDescription] = useState('')
     const[isLoading,setIsLoading] = useState(false)
+
+    const[hasError,setHasError] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
 
     useEffect(() => {
         if(props.module) {
@@ -66,8 +72,13 @@ const ModuleForm: React.FC<ModuleFormProps> = ( props ) => {
                 close()
             }
         )
-        .catch()
         .finally(() => setIsLoading(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function update() {
@@ -79,11 +90,17 @@ const ModuleForm: React.FC<ModuleFormProps> = ( props ) => {
                 close()
             }
         )
-        .catch()
         .finally(() => setIsLoading(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function close() {
+        setHasError(false)
         props.handleClose&& props.handleClose()
     }
 
@@ -101,6 +118,7 @@ const ModuleForm: React.FC<ModuleFormProps> = ( props ) => {
             <Form onSubmit={save}>
                 <Modal.Body className='position-relative'>
                     <LoadingContainer show={isLoading}/>
+                    <ErrorScreen show={hasError} handleClose={() => setHasError(false)} error={error}/> 
                     <Form.Group className='mb-2'>
                         <h5>{ props.pack?.name }</h5>
                     </Form.Group>

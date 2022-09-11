@@ -50,6 +50,11 @@ const ClassForm: React.FC<ClassFormProps> = ({ show, cClass, pack, handleClose, 
         }
     },[cClass])
 
+    function close() {
+        setHasError(false)
+        handleClose&& handleClose()
+    }
+
     function getData(): dataType {
         let data = {} as dataType
         
@@ -80,7 +85,7 @@ const ClassForm: React.FC<ClassFormProps> = ({ show, cClass, pack, handleClose, 
         .then(
             response => {
                 handleSave&& handleSave(response.data)
-                handleClose&& handleClose()
+                close()
             }
         )
         .finally(
@@ -100,7 +105,7 @@ const ClassForm: React.FC<ClassFormProps> = ({ show, cClass, pack, handleClose, 
         .then(
             response => {
                 handleUpdate&& handleUpdate(response.data)
-                handleClose&& handleClose()
+                close()
             }
         )
         .finally(
@@ -114,18 +119,14 @@ const ClassForm: React.FC<ClassFormProps> = ({ show, cClass, pack, handleClose, 
         )
     }
 
-    function closeError() {
-        setHasError(false)
-    }
-
     return (
-        <Modal show={show} onHide={handleClose}>
+        <Modal show={show} onHide={close}>
             <Modal.Header>
                 <Modal.Title>{cClass? 'Editar turma' : 'Nova turma'}</Modal.Title>
             </Modal.Header>
             <Form onSubmit={save}>
                 <Modal.Body className='position-relative'>
-                    <ErrorScreen show={hasError} handleClose={closeError} error={error}/>                    
+                    <ErrorScreen show={hasError} handleClose={() => setHasError(false)} error={error}/>                    
                     <LoadingContainer show={isLoading}/>
                     <Form.Group className='mb-2'>
                         <h6>{pack?.name}</h6>
@@ -156,7 +157,7 @@ const ClassForm: React.FC<ClassFormProps> = ({ show, cClass, pack, handleClose, 
                 <Modal.Footer>
                     <Button 
                         variant='secondary'
-                        onClick={handleClose}>Cancelar</Button>
+                        onClick={close}>Cancelar</Button>
                     <Button type='submit'>Salvar</Button>
                 </Modal.Footer>
             </Form>

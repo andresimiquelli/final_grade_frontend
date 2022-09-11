@@ -1,13 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import DefaultTable from '../../../components/DefaultTable';
+import ErrorScreen from '../../../components/ErrorScreen';
 import LoadingContainer from '../../../components/LodingContainer';
 import { useAuth } from '../../../context/auth';
 import { useApi } from '../../../services/api';
 import enrollmentType from '../../../services/apiTypes/Enrollment';
 import enrollmentAbsenceType from '../../../services/apiTypes/EnrollmentAbsence';
+import errorType from '../../../services/apiTypes/Error';
 import lessonType from '../../../services/apiTypes/Lesson';
 import { dateRenderer } from '../../../utils/dateRenderer';
+import { extractError } from '../../../utils/errorHandler';
 
 interface AttendanceFormProps {
     classId?: number | string;
@@ -36,6 +39,9 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ classId, show, lesson, 
 
     const isLoading = useMemo(() => loadingAbsences || loadingEnrollments, [loadingEnrollments, loadingAbsences])
 
+    const[hasError,setHasError] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
+
     useEffect(() => {
         loadEnrollments()
     },[classId])
@@ -43,6 +49,11 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ classId, show, lesson, 
     useEffect(() => {
         loadAbsences()
     },[lesson])
+
+    function close() {
+        setHasError(false)
+        props.handleClose&& props.handleClose()
+    }
 
     function loadEnrollments() {
         setLoadingEnrollments(true)
@@ -54,6 +65,12 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ classId, show, lesson, 
             }
         )
         .finally(() => setLoadingEnrollments(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function loadAbsences() {
@@ -68,6 +85,12 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ classId, show, lesson, 
                 }
             )
             .finally(() => setLoadingAbsences(false))
+            .catch(
+                error => {
+                    setError(extractError(error))
+                    setHasError(true)
+                }
+            )
         }
     }
 
@@ -125,25 +148,32 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ classId, show, lesson, 
         api.post(`/lessons/${lesson?.id}/absences`, data)
         .then(() => {
             props.handleSave&& props.handleSave()
-            props.handleClose&& props.handleClose()
+            close()
         })
         .finally(() => setLoadingAbsences(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     return (
-        <Modal show={show} onHide={props.handleClose}>
+        <Modal show={show} onHide={close}>
             <Modal.Header>
                 <Modal.Title>{dateRenderer(lesson?.reference)}</Modal.Title>
             </Modal.Header>
             <Form onSubmit={save}>
                 <Modal.Body className='position-relative'>
                     <LoadingContainer show={isLoading}/>
+                    <ErrorScreen show={hasError} handleClose={() => setHasError(false)} error={error}/> 
                     { !isLoading&& showTable() }
                 </Modal.Body>
                 <Modal.Footer>
                     <Button 
                         variant='secondary'
-                        onClick={props.handleClose}>
+                        onClick={close}>
                         {props.notEditable? 'Fechar' : 'Cancelar'}
                     </Button>
                     <Button 

@@ -4,6 +4,9 @@ import lessonType from '../../../services/apiTypes/Lesson';
 import { useAuth } from '../../../context/auth';
 import { useApi } from '../../../services/api';
 import LoadingContainer from '../../../components/LodingContainer';
+import errorType from '../../../services/apiTypes/Error';
+import ErrorScreen from '../../../components/ErrorScreen';
+import { extractError } from '../../../utils/errorHandler';
 
 
 interface LessonFormProps {
@@ -31,6 +34,9 @@ const LessonForm: React.FC<LessonFormProps> = ( props ) => {
     const[reference,setReference] = useState('')
     const[isLoading,setIsLoading] = useState(false)
 
+    const[hasError,setHasError] = useState(false)
+    const[error,setError] = useState<errorType | undefined>()
+
     useEffect(() => {
         if(props.lesson) {
             setContent(props.lesson.content)
@@ -43,6 +49,12 @@ const LessonForm: React.FC<LessonFormProps> = ( props ) => {
     function clearForm() {
         setContent('')
         setReference('')
+    }
+
+    function close() {
+        clearForm()
+        setHasError(false)
+        props.handleClose&& props.handleClose()
     }
 
     function getData(): dataType {
@@ -74,10 +86,16 @@ const LessonForm: React.FC<LessonFormProps> = ( props ) => {
         .then(
             response => {
                 props.handleSave&& props.handleSave(response.data)
-                props.handleClose&& props.handleClose()
+                close()
             }
         )
         .finally(() => setIsLoading(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     function update() {
@@ -86,14 +104,20 @@ const LessonForm: React.FC<LessonFormProps> = ( props ) => {
         .then(
             response => {
                 props.handleUpdate&& props.handleUpdate(response.data)
-                props.handleClose&& props.handleClose()
+                close()
             }
         )
         .finally(() => setIsLoading(false))
+        .catch(
+            error => {
+                setError(extractError(error))
+                setHasError(true)
+            }
+        )
     }
 
     return (
-        <Modal show={props.show} onHide={props.handleClose}>
+        <Modal show={props.show} onHide={close}>
             <Modal.Header>
                 <Modal.Title>
                     { props.lesson? 'Editar aula' : 'Nova aula' }
@@ -102,6 +126,7 @@ const LessonForm: React.FC<LessonFormProps> = ( props ) => {
             <Form onSubmit={save}>
                 <Modal.Body className='position-relative'>
                     <LoadingContainer show={isLoading} />
+                    <ErrorScreen show={hasError} handleClose={() => setHasError(false)} error={error}/> 
                     <Form.Group className='mb-2'>
                         <Form.Control 
                             type='date'
@@ -122,7 +147,7 @@ const LessonForm: React.FC<LessonFormProps> = ( props ) => {
                 <Modal.Footer>
                     <Button 
                         variant='secondary'
-                        onClick={props.handleClose}>
+                        onClick={close}>
                         Cancelar
                     </Button>
                     <Button type='submit'>
