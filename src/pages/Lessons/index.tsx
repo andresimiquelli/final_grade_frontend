@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import ContentToolBar from '../../components/ContentToolBar';
 import LoadingContainer from '../../components/LodingContainer';
 import { useAuth } from '../../context/auth';
@@ -19,6 +19,8 @@ import PaginatorDefault from '../../components/PaginatorDefault';
 import JournalService, { statusPermissions } from '../../services/JournalService';
 import { extractError } from '../../utils/errorHandler';
 import ConfirmationModal from '../../components/ConfirmationModal';
+import dateCompare from '../../utils/dateCompare';
+import ContentToolBarForm from '../../components/ContentToolBarForm';
 
 const Lessons: React.FC = () => {
 
@@ -40,6 +42,9 @@ const Lessons: React.FC = () => {
 
     const[isEditable,setIsEditable] = useState<number>(statusPermissions.LOADING)
 
+    const[dateStart,setDateStart] = useState('')
+    const[dateEnd,setDateEnd] = useState('')
+
     useEffect(() => {
         setContentTitle("Aulas")
         setSelectedMenu(MenuKeys.CLASSES)
@@ -51,9 +56,22 @@ const Lessons: React.FC = () => {
         }
     },[])
 
+    function getSearch() {
+        let search = ''
+        if(dateStart.length===10) {
+            search += '&filters=reference:>=:'+dateStart
+
+            if(dateEnd.length===10) {
+                search += ',reference:<=:'+dateEnd
+            }
+        }
+
+        return search
+    }
+
     function loadLessons(page: number = 1) {
         setIsLoading(true)
-        api.get(`/classes/${class_id}/subjects/${subject_id}/lessons?page=${page}`)
+        api.get(`/classes/${class_id}/subjects/${subject_id}/lessons?page=${page}${getSearch()}`)
         .then(
             response => {
                 setLessons(response.data.data)
@@ -108,6 +126,23 @@ const Lessons: React.FC = () => {
     function deleteLessonCancel() {
         setShowDeleteModal(false)
         setSelected(undefined)
+    }
+
+    function handleChangeDateStart(date: string) {
+        setDateStart(date)
+    }
+
+    function handleChangeDateEnd(date: string) {
+        if(date.length>0) {
+            if(dateCompare(date, dateStart) > -1) {
+                setDateEnd(date)
+            } else {
+                setDateEnd(dateStart)
+                addErrorMessage({message: '"A data final não pode ser anterior à data inicial."'})
+            }
+        } else {
+            setDateEnd(date)
+        }        
     }
 
     function showTable() {
@@ -185,7 +220,23 @@ const Lessons: React.FC = () => {
                 handleClose={closeAttendanceForm}
                 lesson={selected}/>
             <ContentToolBar variant={currentUser?.type === UserType.PROF.value? 'bordered' : 'default'}>
-                <div></div>
+                <div>
+                    <ContentToolBarForm>
+                        <Form.Control 
+                            type='date'
+                            onChange={(e) => handleChangeDateStart(e.target.value)}
+                            value={dateStart}/>
+                        <Form.Control 
+                            type='date'
+                            onChange={(e) => handleChangeDateEnd(e.target.value)}
+                            value={dateEnd}
+                            disabled={dateStart.length===0}/>
+                        <Button
+                            onClick={() => loadLessons()}>
+                            Buscar
+                        </Button>
+                    </ContentToolBarForm>
+                </div>
                 <div>
                     <PaginatorDefault
                         currentPage={currentPage}
