@@ -19,6 +19,9 @@ import ModuleSubjectForm from './ModuleSubjectForm';
 import PaginatorDefault from '../../../../components/PaginatorDefault';
 import { extractError } from '../../../../utils/errorHandler';
 import ConfirmationModal from '../../../../components/ConfirmationModal';
+import { CgArrowsExchangeAltV } from 'react-icons/cg';
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import uuid from 'react-uuid';
 
 const ModuleSubjects: React.FC = () => {
 
@@ -121,6 +124,23 @@ const ModuleSubjects: React.FC = () => {
         setSelected(undefined)
     }
 
+    function onDrag(result: DropResult) {
+        const from = result.source.index
+        const to = result.destination? result.destination.index : from
+
+        if(from !== to ) {
+            let ids: number[] = []
+            let nSubjects = subjects
+            nSubjects.splice(to, 0, nSubjects.splice(from,1,)[0])
+            nSubjects.forEach((subject, index) => {ids.push(subject.id); subject.order = index+1})
+            setIsLoading(true)
+            api.post(`/reorder/subjects`, {ids: ids})
+                .then(() => setSubjects(nSubjects))
+                .catch(error => addErrorMessage(error))
+                .finally(() => setIsLoading(false))
+        }
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -128,29 +148,48 @@ const ModuleSubjects: React.FC = () => {
                     <tr>
                         <th>Disciplina</th>
                         <th>Carga horária</th>
+                        <th>Ordem</th>
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
-                <tbody>
-                {
-                    subjects.map(subject => 
-                        <tr key={subject.id}>
-                            <td>{subject.subject.name}</td>
-                            <td>{subjectLoadRenderer(subject.load)}</td>
-                            <td>
-                                <ButtonColumn>
-                                    <button 
-                                        className='secondary'
-                                        onClick={() => editSubject(subject)}>
-                                            <FaEdit />
-                                    </button>
-                                    <button className='secondary' onClick={() => deleteSubject(subject)}><FaTrash /></button>
-                                </ButtonColumn>
-                            </td>
-                        </tr>
-                    )
-                }                    
-                </tbody>
+                <DragDropContext onDragEnd={onDrag}>
+                    <Droppable droppableId={uuid()}>
+                        {(provided,_) => (
+                            <tbody
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}>
+                            {
+                                subjects.map((subject, index) =>
+                                    <Draggable
+                                        key={subject.id}
+                                        index={index}
+                                        draggableId={`d_${subject.id}`}>
+                                            {(provided,_) => (
+                                                <tr
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}>
+                                                    <td>{subject.subject.name}</td>
+                                                    <td>{subjectLoadRenderer(subject.load)}</td>
+                                                    <td {...provided.dragHandleProps}>{subject.order} <CgArrowsExchangeAltV /></td>
+                                                    <td>
+                                                        <ButtonColumn>
+                                                            <button 
+                                                                className='secondary'
+                                                                onClick={() => editSubject(subject)}>
+                                                                    <FaEdit />
+                                                            </button>
+                                                            <button className='secondary' onClick={() => deleteSubject(subject)}><FaTrash /></button>
+                                                        </ButtonColumn>
+                                                    </td>
+                                                </tr>
+                                            )}                                        
+                                    </Draggable> 
+                                )
+                            }                    
+                            </tbody>
+                        )}                        
+                    </Droppable>
+                </DragDropContext>
             </DefaultTable>
         )
     }

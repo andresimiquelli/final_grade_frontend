@@ -17,6 +17,9 @@ import ModuleForm from './ModuleForm';
 import PaginatorDefault from '../../../components/PaginatorDefault';
 import { extractError } from '../../../utils/errorHandler';
 import ConfirmationModal from '../../../components/ConfirmationModal';
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import uuid from 'react-uuid';
+import { CgArrowsExchangeAltV } from 'react-icons/cg';
 
 const Modules: React.FC = () => {
 
@@ -113,6 +116,23 @@ const Modules: React.FC = () => {
         setSelected(undefined)
     }
 
+    function onDrag(result: DropResult) {
+        const from = result.source.index
+        const to = result.destination? result.destination.index : from
+        
+        if(from !== to ) {
+           let ids: number[] = []
+           let nModules = modules 
+           nModules.splice(to,0,nModules.splice(from,1)[0])
+           nModules.forEach((m,i) => {ids.push(m.id); m.order = i+1})
+           setIsLoading(true)
+           api.post(`/reorder/modules`, {ids: ids})
+             .then(() => setModules(nModules))
+             .catch(error => addErrorMessage(error))
+             .finally(() => setIsLoading(false))
+        }
+    }
+
     function showTable() {
         return (
             <DefaultTable>
@@ -124,32 +144,51 @@ const Modules: React.FC = () => {
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
-                <tbody>
-                {
-                    modules.map(module => 
-                        <tr key={module.id}>
-                            <td>{module.name}</td>
-                            <td>{module.description}</td>
-                            <td>{module.order}</td>
-                            <td>
-                                <ButtonColumn>
-                                    <button 
-                                        className='secondary'
-                                        onClick={() => editModule(module)}>
-                                            <FaEdit/>
-                                    </button>
-                                    <button className='secondary' onClick={() => deleteModule(module)}><FaTrash/></button>
-                                    <button
-                                        className='ml-1'
-                                        onClick={() => { navigate(`/packs/${pack_id}/modules/${module.id}/subjects`) }}>
-                                        <FaAddressBook /><span>Disciplinas</span>
-                                    </button>
-                                </ButtonColumn>
-                            </td>
-                        </tr>    
-                    )
-                }
-                </tbody>
+                <DragDropContext onDragEnd={onDrag}>
+                    <Droppable droppableId={uuid()}>
+                        {(provided, _) => (
+                            <tbody 
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}>
+                            {
+                                modules.map((module, index) => (
+                                    <Draggable 
+                                        key={module.id} 
+                                        index={index} 
+                                        draggableId={`d_${module.id}`}>
+                                        {(p, _) => (
+                                            <tr 
+                                                ref={p.innerRef}  
+                                                {...p.draggableProps}>
+                                                <td>{module.name}</td>
+                                                <td>{module.description}</td>
+                                                <td {...p.dragHandleProps}>{module.order} <CgArrowsExchangeAltV /></td>
+                                                <td>
+                                                    <ButtonColumn>
+                                                        <button 
+                                                            className='secondary'
+                                                            onClick={() => editModule(module)}>
+                                                                <FaEdit/>
+                                                        </button>
+                                                        <button className='secondary' onClick={() => deleteModule(module)}><FaTrash/></button>
+                                                        <button
+                                                            className='ml-1'
+                                                            onClick={() => { navigate(`/packs/${pack_id}/modules/${module.id}/subjects`) }}>
+                                                            <FaAddressBook /><span>Disciplinas</span>
+                                                        </button>
+                                                    </ButtonColumn>
+                                                </td>
+                                            </tr> 
+                                        )}
+                                    </Draggable>
+                                )
+                                )
+                            }
+                                                         
+                            </tbody>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             </DefaultTable>
         )
     }
