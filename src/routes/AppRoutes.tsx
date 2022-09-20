@@ -17,6 +17,7 @@ import Journals from '../pages/Classes/Journals';
 import Lessons from '../pages/Lessons';
 import Evaluations from '../pages/Classes/Evaluations';
 import FinalGrade from '../pages/Classes/FinalGrade';
+import MyAccount from '../pages/MyAccount';
 
 const AppRoutes: React.FC = () => {
     return (
@@ -37,6 +38,7 @@ const AppRoutes: React.FC = () => {
                 <Route path='lessons/:class_id/:subject_id' element={<Lessons />} />
                 <Route path='evaluations/:class_id/:subject_id' element={<Evaluations />} />
                 <Route path='finalgrade/:class_id/:subject_id' element={<FinalGrade />} />
+                <Route path='account' element={<MyAccount />}/>
             </Routes>
         </DefaultLayout>
     );

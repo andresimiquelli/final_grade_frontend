@@ -8,7 +8,7 @@ import { Avatar, Container, Menu, Name } from './styles';
 
 const UserGadget: React.FC = () => {
 
-    const { currentUser, token, updateUser, setAuth } = useAuth()
+    const { currentUser, token, setAuth } = useAuth()
     const api = useApi(token)
     const navigate = useNavigate()
 
@@ -33,7 +33,7 @@ const UserGadget: React.FC = () => {
                 <ClickAwayListener onClickAway={() => setShowMenu(false)}>
                     <Menu>
                         <ul>
-                            <li>Minha conta</li>
+                            <li onClick={() => { navigate(`/account`) }}>Minha conta</li>
                             <li onClick={logout}>Sair</li>
                         </ul>
                     </Menu>
