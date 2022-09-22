@@ -28,7 +28,7 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ( props ) => {
             <Icon>
                 <BiMessageAltError />
             </Icon>
-            <p>{ !props.message&& props.error&& getMessage(props.error?.type) }</p>
+            <p>{ !props.message? props.error&& getMessage(props.error?.type) : props.message}</p>
             <ButtonClose onClick={handleOk}>OK</ButtonClose>
         </Container>
     );
