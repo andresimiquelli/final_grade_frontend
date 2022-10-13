@@ -1,17 +1,18 @@
 import axios, { Axios } from "axios";
 
-export const baseUrl = 'http://127.0.0.1:8000/api/v1'
+export const baseUrl =
+  "http://moriaeducacao.com.br/diariodigital/public/api/v1";
 
 const api = axios.create({
-    baseURL: baseUrl
-})
+  baseURL: baseUrl,
+});
 
 function useApi(token: string = ""): Axios {
-    if(token.length>0) {
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    }
+  if (token.length > 0) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  }
 
-    return api
+  return api;
 }
 
-export { useApi }
+export { useApi };
