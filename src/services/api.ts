@@ -1,7 +1,6 @@
 import axios, { Axios } from "axios";
 
-export const baseUrl =
-  "http://moriaeducacao.com.br/diariodigital/public/api/v1";
+export const baseUrl = "https://diariodigital-api.moriaeducacao.com.br/api/v1";
 
 const api = axios.create({
   baseURL: baseUrl,
