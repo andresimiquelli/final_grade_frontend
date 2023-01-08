@@ -6,13 +6,11 @@ import { Container, Title, Item } from "./styles";
 
 import {
   FaUsers,
-  FaChalkboardTeacher,
   FaAddressBook,
   FaUserGraduate,
   FaBookReader,
   FaBoxOpen,
 } from "react-icons/fa";
-import { MdSpaceDashboard } from "react-icons/md";
 import { IoPeopleCircleSharp } from "react-icons/io5";
 
 const SideMenu: React.FC = () => {
